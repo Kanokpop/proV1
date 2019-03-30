@@ -21,21 +21,14 @@ export class ContentDrawer {
   bounceBack: boolean = true;
   thresholdTop: number = 200;
   thresholdBottom: number = 200;
-  Petch: any;
 
   constructor(public element: ElementRef, public renderer: Renderer, public domCtrl: DomController, public platform: Platform,public navCtrl: NavController,public navParams: NavParams, ) {
     
 
   }
   
-  ionViewCanEnter(){
-    this.Petch = this.navParams.get("Petch");
-    console.log(this.Petch);
-  }
 
   ngAfterContentInit() {
-    console.log(this.Petch);
-
     
     if(this.options.handleHeight){
       this.handleHeight = this.options.handleHeight;
@@ -86,7 +79,7 @@ export class ContentDrawer {
     if((newTop < this.thresholdTop && ev.additionalEvent === "panup") || bounceToTop){
 
       this.domCtrl.write(() => {
-        this.renderer.setElementStyle(this.element.nativeElement, 'top', this.platform.height() - this.handleHeight - 500 + 'px');
+        this.renderer.setElementStyle(this.element.nativeElement, 'top', this.platform.height() - this.handleHeight - 250 + 'px');
         this.renderer.setElementStyle(this.element.nativeElement, 'padding-top', this.handleHeight + 'px');
         
       });

@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
-import { ContentDrawerComponent } from './content-drawer/content-drawer';
+import { ContentDrawer } from './content-drawer/content-drawer';
 @NgModule({
-	declarations: [ContentDrawerComponent],
+	declarations: [ContentDrawer],
 	imports: [],
-	exports: [ContentDrawerComponent]
+	exports: [ContentDrawer]
 })
 export class ComponentsModule {}

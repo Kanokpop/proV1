@@ -1,3 +1,12 @@
+<div id="custom-overlay" [style.display]="splash ? 'flex': 'none'">
+  <div class="flb">
+    <div class="Aligner-item Aligner-item--top"></div>
+    <img src="/assets/imgs/4-2.png">
+    <div class="Aligner-item Aligner-item--bottom"></div>
+  </div>
+</div>
+
+
 <ion-header>
   <ion-toolbar color="primary">
     <ion-searchbar [(ngModel)]="autocomplete.input" (ionInput)="updateSearchResults()" placeholder="Search for a place"></ion-searchbar>
@@ -33,10 +42,22 @@
               ทางเข้า : {{startstation}} -> {{startgatehtml}}
           </p>
               <!-- <ng-template *ngIf="endgatehtml"> -->
-          <p *ngIf = 'connectgate'>
-            ทางเชื่อม : {{connectstation}} -> {{connectgate}}
+          <p *ngIf = 'nextstation'>
+              {{nextstation}}
           </p>
-          <p>
+          <p *ngIf = 'nextstation'>
+          .
+          </p>             
+          <p *ngIf = 'connectgate'>
+            ทางเชื่อม : {{connectstationhtml}} -> {{connectgate}}
+          </p>
+          <p *ngIf = 'nextstation'>
+          .
+          </p>        
+          <p *ngIf = 'previousstation'>
+          {{previousstation}}
+          </p>
+          <p *ngIf = 'endgatehtml'>          
             ทางออก : {{endstation}} -> {{endgatehtml}}
           </p>
           <!-- </ng-template> -->

@@ -24,6 +24,9 @@ import { FIREBASE_CONFIG } from './firebase.credentials';
 import {  ErrorHandler } from '@angular/core';
 import {  IonicErrorHandler } from 'ionic-angular';
 import { ContentDrawer } from '../components/content-drawer/content-drawer';
+import { IonicStorageModule } from '@ionic/storage';
+import { IntroPage } from '../pages/intro/intro';
+
 
 @NgModule({
   declarations: [
@@ -31,12 +34,14 @@ import { ContentDrawer } from '../components/content-drawer/content-drawer';
     MapPage,
     TabsNavigationPage,
     PlacesPage,
-    ContentDrawer
+    ContentDrawer,
+    IntroPage
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
+    IonicStorageModule.forRoot(),
     AngularFireDatabaseModule,
     AngularFireModule.initializeApp(FIREBASE_CONFIG),
   ],
@@ -46,16 +51,19 @@ import { ContentDrawer } from '../components/content-drawer/content-drawer';
     MapPage,
     TabsNavigationPage,
     PlacesPage,
-    ContentDrawer
+    ContentDrawer,
+    IntroPage
   ],
   exports: [ContentDrawer],
   providers: [
     StatusBar,
+    Storage,
     Connectivity,
     GoogleMaps,
     SplashScreen,
     Geolocation,
     Network,
+    {provide: ErrorHandler, useClass: IonicErrorHandler }
     // FirebaseService,
   ]
 })
