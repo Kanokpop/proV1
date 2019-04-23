@@ -46,7 +46,7 @@ export class MapPage {
  public Pop: any;
  public kartoon: any;
  start: any; end: any;
- stationstart: any;
+ stationstart = [];
  stationend: any;
  startgate: any;
  connectgate: any;
@@ -252,11 +252,14 @@ export class MapPage {
                   var keys = Object.keys(this.Pop[index]);
                   //  console.log(keys.length)
                  if (countconpare == ((keys.length-1))){
-                   console.log('kaissja')
-                   this.stationstart = {lat: this.Pop[index][index2].lat,lng: this.Pop[index][index2].lng,name: this.Pop[index][index2].name,line: this.Pop[index][index2].line};
-                   console.log(this.stationstart)
+                  //  console.log('kaissja')
+                  //  console.log(index)
+                   this.stationstart[index] = {lat: this.Pop[index][index1].lat,lng: this.Pop[index][index1].lng,name: this.Pop[index][index1].name,line: this.Pop[index][index1].line};
+                    console.log(this.stationstart)
                    // this.stationstart = {lat: this.Pop[8].lat,lng: this.Pop[8].lng,name: this.Pop[8].name,line: this.Pop[8].line};
-                   this.startstation = this.stationstart.name
+                  //  this.startstation = this.stationstart[index].name
+                  //  console.log(this.startstation)
+                  //  console.log(this.stationstart)
                    this.n = index2
                    // ,gate: this.Pop[index].gate
                    // this.stationstart = {lat: this.Pop[13].lat,lng: this.Pop[13].lng,name: this.Pop[13].name,line: this.Pop[13].line};
@@ -286,6 +289,27 @@ export class MapPage {
              }
              // this.startgatehtml = this.startgate.gate;
             }
+            let pare_st = []
+            let countpare_st =0;
+                   for (let i_st in this.stationstart) {
+                     pare_st[i_st] = this.calculateDistance(this.start.lat,this.stationstart[i_st].lat,this.start.lng,this.stationstart[i_st].lng)               
+                    }
+                    // console.log(pare_st)
+                  for (let i_st in this.stationstart) {
+                    let pare = pare_st[i_st]
+                    for (let i_st1 in this.stationstart) {
+                      
+                      if (pare<pare_st[i_st1]) {
+                        // console.log('[]][]')
+                        countpare_st++;
+                        // console.log(countpare_st)
+                      }      
+                      if (countpare_st == (this.stationstart.length-1)) {
+                        this.startstation = {lat: this.stationstart[i_st].lat,lng: this.stationstart[i_st].lng,name: this.stationstart[i_st].name,line: this.stationstart[i_st].line};   
+                      }         
+                    }
+                  }
+                  console.log(this.startstation.name)
             
          mapEle.classList.add('show-map');
        });
