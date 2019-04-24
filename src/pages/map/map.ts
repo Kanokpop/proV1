@@ -47,7 +47,7 @@ export class MapPage {
  public kartoon: any;
  start: any; end: any;
  stationstart = [];
- stationend: any;
+ stationend= [];
  startgate: any;
  connectgate: any;
  endgate: any;
@@ -65,6 +65,8 @@ export class MapPage {
  p: any;
  Pink: any;
  Green: any;
+ service = new google.maps.DistanceMatrixService;
+ stst: any;
   // endgate: { lat: any; lng: any; gate: any; };
  // stLatLng: string;
  
@@ -119,13 +121,13 @@ export class MapPage {
         
        }
        ionViewDidLoad(){
-         console.log('ll')
-         this.storage.get('intro-done').then(done => {
-           if (done) {
-             this.storage.set('intro-done', false);
-             this.navCtrl.setRoot(IntroPage);
-           }
-         });
+        //  console.log('ll')
+        //  this.storage.get('intro-done').then(done => {
+        //    if (done) {
+        //      this.storage.set('intro-done', false);
+        //      this.navCtrl.setRoot(IntroPage);
+        //    }
+        //  });
          // this.getDataFromFirebase().then(data =>{
             
          //   this.Pop = data as any;
@@ -136,8 +138,8 @@ export class MapPage {
          this.getPosition();
        }
        ionViewDidEnter(){
-         console.log('lll')
-         this.storage.set('intro-done', true);
+        //  console.log('lll')
+        //  this.storage.set('intro-done', true);
        }
       
        // Calculate Distance
@@ -149,6 +151,67 @@ export class MapPage {
          // console.log(dis);
          return dis;
        }
+       
+       calcDistance(origin1,destinationB,ref_Callback_calcDistance){
+        var geocoder = new google.maps.Geocoder();
+        var service = new google.maps.DistanceMatrixService();
+        var temp_duration = 0;
+        var temp_distance = 0;
+        var testres;
+        service.getDistanceMatrix(
+            {
+                origins: [origin1],
+                destinations: [destinationB],
+                travelMode: google.maps.TravelMode.DRIVING,
+                unitSystem: google.maps.UnitSystem.METRIC,
+                avoidHighways: false,
+                avoidTolls: false
+            }, function(response, status) {
+                if (status !== google.maps.DistanceMatrixStatus.OK) {
+                    alert('Error was: ' + status);
+                    testres= {"duration":0,"distance":0};
+                } else {
+                    var originList = response.originAddresses;
+                    var destinationList = response.destinationAddresses;
+                    // var showGeocodedAddressOnMap = function (asDestination) {
+                    //     testres= function (results, status) {
+                    //     };
+                    // };
+                    var duration_total;
+                    for (var i = 0; i < originList.length; i++) {
+                        var results = response.rows[i].elements;
+                        this.stst =results[0].distance.value;
+                        geocoder.geocode({'address': originList[i]},
+                            // showGeocodedAddressOnMap(false)
+                            );
+                        for (var j = 0; j < results.length; j++) {
+                            geocoder.geocode({'address': destinationList[j]},
+                                // showGeocodedAddressOnMap(true)
+                                );
+                            temp_duration+=results[j].duration.value;
+                            temp_distance+=results[j].distance.value;
+                        }
+                    }
+                    testres= {"duration":temp_duration,"distance":temp_distance};
+                    // console.log(testres.distance)
+                    // return testres.distance;
+                    if(typeof ref_Callback_calcDistance === 'function'){
+                        //calling the callback function
+                        ref_Callback_calcDistance(testres)
+                    }
+                }
+            }
+        );
+      }
+
+Callback_calcDistance(testres) {
+    //do something with testres
+    // return testres;
+    console.log(testres)
+}
+
+
+    
 
        getDataFromFirebase(){return new Promise((resolve, reject) => {
          this.db.list('/Station/').valueChanges()
@@ -220,9 +283,20 @@ export class MapPage {
              // test compare Locate
              let compare = [];
              let compare1 = [];
-             for (let index = 0; index < this.Pop.length; index++) {               
-               for (let index1 in this.Pop[index]) {
-                 compare[index1] = this.calculateDistance(this.start.lat,this.Pop[index][index1].lat,this.start.lng,this.Pop[index][index1].lng)
+             console.log(this.start)
+             console.log({lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng})
+             
+              
+              for (let index = 0; index < this.Pop.length; index++) {  
+                
+                for (let index1 in this.Pop[index]) {
+                  this.calcDistance(this.start,{lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng},this.Callback_calcDistance);
+                  console.log(this.stst)
+                //  compare[index1] = this.calculateDistance(this.start.lat,this.Pop[index][index1].lat,this.start.lng,this.Pop[index][index1].lng)
+                // console.log(this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng}))
+                compare[index1] =  this.stst;
+                // this.calcDistance(this.start,{lat: 13.746446, lng: 100.52936});
+
                  // for (let index1 = 1; index1 < 7; index1++) {
                    //   compare1[index] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index1].lat,this.start.lng,this.Pop[index].gate['gate'+index1].lng)
                    //   console.log(compare1[index]);                   
@@ -232,85 +306,92 @@ export class MapPage {
                   // console.log(compare);
                   
                 }
+                if(compare[0] !== '')
                 console.log(compare)
              // mark End location
-            for (let index in this.Pop) {
+            // for (let index in this.Pop) {
 
-             for (let index1 in this.Pop[index]) {
-               let compo = compare[index1];
-               let countconpare = 0;
-              //  console.log(index1)
-              //  console.log(compo)
-               for (let index2 in this.Pop[index]) {
-                //  console.log(index2)
-                // let compare = this.Pop[index];     
-                // console.log(compare[index2])            
-                 if (compo<compare[index2]) {
-                   countconpare++;
-                  //  console.log(countconpare)
-                  }
-                  var keys = Object.keys(this.Pop[index]);
-                  //  console.log(keys.length)
-                 if (countconpare == ((keys.length-1))){
-                  //  console.log('kaissja')
-                  //  console.log(index)
-                   this.stationstart[index] = {lat: this.Pop[index][index1].lat,lng: this.Pop[index][index1].lng,name: this.Pop[index][index1].name,line: this.Pop[index][index1].line};
-                    console.log(this.stationstart)
-                   // this.stationstart = {lat: this.Pop[8].lat,lng: this.Pop[8].lng,name: this.Pop[8].name,line: this.Pop[8].line};
-                  //  this.startstation = this.stationstart[index].name
-                  //  console.log(this.startstation)
-                  //  console.log(this.stationstart)
-                   this.n = index2
-                   // ,gate: this.Pop[index].gate
-                   // this.stationstart = {lat: this.Pop[13].lat,lng: this.Pop[13].lng,name: this.Pop[13].name,line: this.Pop[13].line};
-                   // for (let index2 = 1; index2 < 7; index2++) {
-                   //   compare1[index2] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index2].lat,this.start.lng,this.Pop[index].gate['gate'+index2].lng)
-                   // }
-                   // console.log(compare1);
-                   // for (let index3 = 1; index3 < 7; index3++) {
-                   //   let compogate = compare1[index3];
-                   //   let countconpare1 = 0;
-                   //   // console.log(compogate+'compo');
-                   //   // console.log(countconpare1+'countstart');
-                   //   for (let index4 = 1; index4 < 7; index4++) {
-                   //     // console.log(index4+'i');
-                   //     if (compogate<compare1[index4]) {
-                   //       countconpare1++;
-                   //       // console.log(countconpare1+'count');
-                   //     }                
-                   //     if (countconpare1 == 5) {
-                   //       this.startgate = {lat: this.Pop[index].gate['gate'+index3].lat,lng: this.Pop[index].gate['gate'+index3].lng,gate: this.Pop[index].gate['gate'+index3].description};
-                   //     }     
-                   //   }
+            //  for (let index1 in this.Pop[index]) {
+            //    let compo = compare[index1];
+            //    let countconpare = 0;
+            //   //  console.log(index1)
+            //   //  console.log(compo)
+            //    for (let index2 in this.Pop[index]) {
+            //     //  console.log(index2)
+            //     // let compare = this.Pop[index];     
+            //     // console.log(compare[index2])            
+            //      if (compo<compare[index2]) {
+            //        countconpare++;
+            //       //  console.log(countconpare)
+            //       }
+            //       var keys = Object.keys(this.Pop[index]);
+            //       //  console.log(keys.length)
+            //      if (countconpare == ((keys.length-1))){
+            //       //  console.log('kaissja')
+            //       //  console.log(index)
+            //        this.stationstart[index] = {lat: this.Pop[index][index1].lat,lng: this.Pop[index][index1].lng,name: this.Pop[index][index1].name,line: this.Pop[index][index1].line};
+            //         // console.log(this.stationstart)
+            //        // this.stationstart = {lat: this.Pop[8].lat,lng: this.Pop[8].lng,name: this.Pop[8].name,line: this.Pop[8].line};
+            //       //  this.startstation = this.stationstart[index].name
+            //       //  console.log(this.startstation)
+            //       //  console.log(this.stationstart)
+            //        this.n = index2
+            //        // ,gate: this.Pop[index].gate
+            //        // this.stationstart = {lat: this.Pop[13].lat,lng: this.Pop[13].lng,name: this.Pop[13].name,line: this.Pop[13].line};
+            //        // for (let index2 = 1; index2 < 7; index2++) {
+            //        //   compare1[index2] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index2].lat,this.start.lng,this.Pop[index].gate['gate'+index2].lng)
+            //        // }
+            //        // console.log(compare1);
+            //        // for (let index3 = 1; index3 < 7; index3++) {
+            //        //   let compogate = compare1[index3];
+            //        //   let countconpare1 = 0;
+            //        //   // console.log(compogate+'compo');
+            //        //   // console.log(countconpare1+'countstart');
+            //        //   for (let index4 = 1; index4 < 7; index4++) {
+            //        //     // console.log(index4+'i');
+            //        //     if (compogate<compare1[index4]) {
+            //        //       countconpare1++;
+            //        //       // console.log(countconpare1+'count');
+            //        //     }                
+            //        //     if (countconpare1 == 5) {
+            //        //       this.startgate = {lat: this.Pop[index].gate['gate'+index3].lat,lng: this.Pop[index].gate['gate'+index3].lng,gate: this.Pop[index].gate['gate'+index3].description};
+            //        //     }     
+            //        //   }
 
-                   // }
-                 }
-               }
-             }
-             // this.startgatehtml = this.startgate.gate;
-            }
-            let pare_st = []
-            let countpare_st =0;
-                   for (let i_st in this.stationstart) {
-                     pare_st[i_st] = this.calculateDistance(this.start.lat,this.stationstart[i_st].lat,this.start.lng,this.stationstart[i_st].lng)               
-                    }
-                    // console.log(pare_st)
-                  for (let i_st in this.stationstart) {
-                    let pare = pare_st[i_st]
-                    for (let i_st1 in this.stationstart) {
+            //        // }
+            //      }
+            //    }
+            //  }
+            //  // this.startgatehtml = this.startgate.gate;
+            // }
+            // let pare_st = []
+            // let countpare_st =0;
+            //        for (let i_st in this.stationstart) {
+            //          pare_st[i_st] = this.calculateDistance(this.start.lat,this.stationstart[i_st].lat,this.start.lng,this.stationstart[i_st].lng)               
+            //         }
+            //         // console.log(pare_st)
+            //       for (let i_st in this.stationstart) {
+            //         countpare_st = 0;
+            //         let pare = pare_st[i_st]
+            //         for (let i_st1 in this.stationstart) {
                       
-                      if (pare<pare_st[i_st1]) {
-                        // console.log('[]][]')
-                        countpare_st++;
-                        // console.log(countpare_st)
-                      }      
-                      if (countpare_st == (this.stationstart.length-1)) {
-                        this.startstation = {lat: this.stationstart[i_st].lat,lng: this.stationstart[i_st].lng,name: this.stationstart[i_st].name,line: this.stationstart[i_st].line};   
-                      }         
-                    }
-                  }
-                  console.log(this.startstation.name)
+            //           if (pare<pare_st[i_st1]) {
+            //             // console.log('[]][]')
+            //             countpare_st++;
+            //             // console.log(countpare_st)
+            //           }      
+            //           if (countpare_st == (this.stationstart.length-1)) {
+            //             this.startstation = {lat: this.stationstart[i_st].lat,lng: this.stationstart[i_st].lng,name: this.stationstart[i_st].name,line: this.stationstart[i_st].line};   
+            //           }         
+            //         }
+            //       }
+                  // console.log(pare_st)
+                  // console.log(this.startstation.name)
+                  // this.stst = {lat :this.startstation.lat,lng: this.startstation.lng}
+                  // console.log(this.stst)
             
+                  //calling the calcDistance function and passing callback function reference
+                  // this.calcDistance(this.start,this.stst,this.Callback_calcDistance);
          mapEle.classList.add('show-map');
        });
      })
@@ -339,7 +420,7 @@ export class MapPage {
    this.clearMarkers();
    this.autocompleteItems = [];
    // console.log(this.Pop);
-   let waypts = [{location: this.stationstart,
+   let waypts = [{location: this.startstation,
                  stopover: true}];
   
   
@@ -352,9 +433,9 @@ export class MapPage {
          position: {lat: results[0].geometry.viewport.na.j,lng: results[0].geometry.viewport.ia.j},
          map: this.map
        });
-       // console.log(results[0].geometry.location);
-       // console.log(results[0].geometry.bounds.ga.j);
-       // console.log(results[0].geometry.bounds.ma.j);       
+      //  console.log(results[0].geometry.location);
+      //  console.log(results[0].geometry.bounds.ga.j);
+      //  console.log(results[0].geometry.bounds.ma.j);       
       
        // this.clearMarkers();
        this.markers.push(marker);
@@ -364,25 +445,30 @@ export class MapPage {
         // setstationend
         let compare = [];
         let compare1 = [];
-        for (let index in this.Pink) {
-          compare[index] = this.calculateDistance(this.end.lat,this.Pink[index].lat,this.end.lng,this.Pink[index].lng)
-          // for (let index1 = 1; index1 < 7; index1++) {
-          //   compare1[index] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index1].lat,this.start.lng,this.Pop[index].gate['gate'+index1].lng)
-          //   console.log(compare1[index]);                   
-          // }
+        for (let index in this.Pop) {
+          for (let index1 in this.Pop[index]) {
+            compare[index1] = this.calculateDistance(this.end.lat,this.Pop[index][index1].lat,this.end.lng,this.Pop[index][index1].lng)
+            // for (let index1 = 1; index1 < 7; index1++) {
+            //   compare1[index] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index1].lat,this.start.lng,this.Pop[index].gate['gate'+index1].lng)
+            //   console.log(compare1[index]);                   
+            // }
+          }
         }
        
-        for (let index = 0; index < 14; index++) {
-          let compo = compare[index];
-          let countconpare = 0;
-          for (let index1 = 0; index1 < 14; index1++) {
-            if (compo<compare[index1]) {
+        for (let index in this.Pop) {
+
+          for (let index1 in this.Pop[index]) {
+            let compo = compare[index1];
+            let countconpare = 0;
+            for (let index2 in this.Pop[index]) {
+            if (compo<compare[index2]) {
               countconpare++;
             }
-            if (countconpare == 13){
-              this.p = index
-              this.stationend = {lat: this.Pop[index].lat,lng: this.Pop[index].lng,line: this.Pop[index].line,name: this.Pop[index].name};
-              this.endstation = this.stationend.name
+            var keys = Object.keys(this.Pop[index]);
+            if (countconpare == ((keys.length-1))){
+              this.p = index2
+              this.stationend[index] = {lat: this.Pop[index][index1].lat,lng: this.Pop[index][index1].lng,name: this.Pop[index][index1].name,line: this.Pop[index][index1].line};
+              // this.endstation = this.stationend.name
              //  for (let index2 = 1; index2 < 7; index2++) {
              //    compare1[index2] = this.calculateDistance(this.end.lat,this.Pop[index].gate['gate'+index2].lat,this.end.lng,this.Pop[index].gate['gate'+index2].lng)
              //  }
@@ -408,8 +494,29 @@ export class MapPage {
             }
           }
         }
+      }
+      // console.log(compare)
+      // console.log(this.stationend)
+      let pare_en = []
+            let countpare_en =0;
+                   for (let i_en in this.stationend) {
+                     pare_en[i_en] = this.calculateDistance(this.end.lat,this.stationend[i_en].lat,this.end.lng,this.stationend[i_en].lng)               
+                    }
+                  for (let i_en in this.stationend) {
+                    countpare_en = 0;
+                    let pare = pare_en[i_en]
+                    for (let i_en1 in this.stationend) {
+                      if (pare<pare_en[i_en1]) {
+                        countpare_en++;
+                      }      
+                      if (countpare_en == (this.stationend.length-1)) {
+                        this.endstation = {lat: this.stationend[i_en].lat,lng: this.stationend[i_en].lng,name: this.stationend[i_en].name,line: this.stationend[i_en].line};   
+                      }         
+                    }
+                  }
+          console.log(this.endstation)
        //  console.log(this.Pop[this.p])
-        console.log(this.stationstart)
+        // console.log(this.stationstart)
        //  console.log(this.stationend)
      //    if (this.stationstart.line == 'green' && this.stationend.line == 'blue') {
      //     this.connectstation = this.Pop[7]
@@ -495,126 +602,126 @@ export class MapPage {
      //   }
      // }
      // console.log(this.connectstation)
-       // var goo = google.maps,
-       //     map = new goo.Map(document.getElementById('map'), {
-       //       center: this.end,
-       //       zoom: 10
-       //     }),
-     //       App = {
-     //                   map: map,
-     //                   bounds            : new google.maps.LatLngBounds(),
-     //                   directionsService : new google.maps.DirectionsService(),   
-     //                   directionsDisplay1: new google.maps.DirectionsRenderer({
-     //                                         map: map,
-     //                                         preserveViewport: true,
-     //                                         suppressMarkers : true,
-     //                                         polylineOptions : {strokeColor:'red'},
-     //                                       }),
-     //                   directionsDisplay2: new google.maps.DirectionsRenderer({
-     //                                       map: map,
-     //                                       preserveViewport: true,
-     //                                       suppressMarkers: true,
-     //                                       polylineOptions: {strokeColor: 'blue'},
-     //                   }),
-     //                   directionsDisplay3: new google.maps.DirectionsRenderer({
-     //                                       map: map,
-     //                                       preserveViewport: true,
-     //                                       suppressMarkers: true,
-     //                                       polylineOptions: {strokeColor: 'green'},
-     //                   }),
-     //                   directionsDisplay4: new google.maps.DirectionsRenderer({
-     //                     map: map,
-     //                     preserveViewport: true,
-     //                     suppressMarkers: true,
-     //                     polylineOptions: {strokeColor: 'red'},
-     // }),
-     //   },
-     //   startLeg = {
-     //     origin: this.start,
-     //     destination: this.stationstart,
-     //     travelMode: 'DRIVING'
-     //   },
-     //   connLeg = {
-     //     origin: this.stationstart,
-     //     destination: {lat : this.connectstation.lat, lng: this.connectstation.lng},
-     //     travelMode: 'TRANSIT',
-     //     transitOptions: {
-     //       modes: ['TRAIN','SUBWAY'],
-     //       routingPreference: 'LESS_WALKING',
-     //       // routingPreference: 'FEWER_TRANSFERS',
-     //     },
-     //   },
-     //   connLeg2 = {
-     //     origin: {lat : this.connectstation.lat, lng: this.connectstation.lng},
-     //     destination: this.stationend,
-     //     travelMode: 'TRANSIT',
-     //     transitOptions: {
-     //       modes: ['TRAIN','SUBWAY'],
-     //       routingPreference: 'LESS_WALKING',
-     //       // routingPreference: 'FEWER_TRANSFERS',
-     //     },
-     //   },
-     //   midLeg = {
-     //     origin: this.stationstart,
-     //     destination: this.stationend,
-     //     travelMode: 'TRANSIT',
-     //     transitOptions: {
-     //       modes: ['TRAIN','SUBWAY'],
-     //       // routingPreference: 'LESS_WALKING',
-     //       routingPreference: this.routing,
-     //     },
-     //   },
-     //   endLeg = {
-     //     origin: this.stationend,
-     //     destination: this.end,
-     //     travelMode: 'TRANSIT',
-     //     transitOptions: {
-     //       modes: ['TRAIN','SUBWAY'],
-     //       routingPreference: 'LESS_WALKING',
-     //       // routingPreference: 'FEWER_TRANSFERS',
-     //     },
+       var goo = google.maps,
+           map = new goo.Map(document.getElementById('map'), {
+             center: this.end,
+             zoom: 10
+           }),
+           App = {
+                       map: map,
+                       bounds            : new google.maps.LatLngBounds(),
+                       directionsService : new google.maps.DirectionsService(),   
+                       directionsDisplay1: new google.maps.DirectionsRenderer({
+                                             map: map,
+                                             preserveViewport: true,
+                                             suppressMarkers : true,
+                                             polylineOptions : {strokeColor:'red'},
+                                           }),
+                       directionsDisplay2: new google.maps.DirectionsRenderer({
+                                           map: map,
+                                           preserveViewport: true,
+                                           suppressMarkers: true,
+                                           polylineOptions: {strokeColor: 'blue'},
+                       }),
+                       directionsDisplay3: new google.maps.DirectionsRenderer({
+                                           map: map,
+                                           preserveViewport: true,
+                                           suppressMarkers: true,
+                                           polylineOptions: {strokeColor: 'green'},
+                       }),
+                       directionsDisplay4: new google.maps.DirectionsRenderer({
+                         map: map,
+                         preserveViewport: true,
+                         suppressMarkers: true,
+                         polylineOptions: {strokeColor: 'red'},
+     }),
+       },
+       startLeg = {
+         origin: this.start,
+         destination: {lat : this.startstation.lat, lng :this.startstation.lng},
+         travelMode: 'DRIVING'
+       },
+       connLeg = {
+         origin: this.startstation,
+         destination: {lat : this.connectstation.lat, lng: this.connectstation.lng},
+         travelMode: 'TRANSIT',
+         transitOptions: {
+           modes: ['TRAIN','SUBWAY'],
+           routingPreference: 'LESS_WALKING',
+           // routingPreference: 'FEWER_TRANSFERS',
+         },
+       },
+       connLeg2 = {
+         origin: {lat : this.connectstation.lat, lng: this.connectstation.lng},
+         destination: {lat : this.endstation.lat, lng :this.endstation.lng},
+         travelMode: 'TRANSIT',
+         transitOptions: {
+           modes: ['TRAIN','SUBWAY'],
+           routingPreference: 'LESS_WALKING',
+           // routingPreference: 'FEWER_TRANSFERS',
+         },
+       },
+       midLeg = {
+         origin: this.startstation,
+         destination: {lat : this.endstation.lat, lng :this.endstation.lng},
+         travelMode: 'TRANSIT',
+         transitOptions: {
+           modes: ['TRAIN','SUBWAY'],
+           // routingPreference: 'LESS_WALKING',
+           routingPreference: this.routing,
+         },
+       },
+       endLeg = {
+         origin: {lat : this.endstation.lat, lng :this.endstation.lng},
+         destination: this.end,
+         travelMode: 'TRANSIT',
+         transitOptions: {
+           modes: ['TRAIN','SUBWAY'],
+           routingPreference: 'LESS_WALKING',
+           // routingPreference: 'FEWER_TRANSFERS',
+         },
         
-     //   };
+       };
 
-     //   App.directionsService.route(startLeg, function(result, status){
-     //     if (status === 'OK') {
-     //       App.directionsDisplay1.setDirections(result);
-     //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //     }
-     //   });
-     //   if (this.connectstation != '') {
-     //     App.directionsService.route(connLeg, function(result, status) {
-     //       if (status == google.maps.DirectionsStatus.OK) {
-     //         App.directionsDisplay2.setDirections(result);
-     //         App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //       }
-     //     });
-     //     App.directionsService.route(connLeg2, function(result, status) {
-     //       if (status == google.maps.DirectionsStatus.OK) {
-     //         App.directionsDisplay3.setDirections(result);
-     //         App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //       }
-     //     });
-     //     App.directionsService.route(endLeg, function(result, status) {
-     //       if (status == google.maps.DirectionsStatus.OK) {
-     //         App.directionsDisplay4.setDirections(result);
-     //         App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //       }
-     //     });
-     //   } else {
-     //     App.directionsService.route(midLeg, function(result, status) {
-     //       if (status == google.maps.DirectionsStatus.OK) {
-     //         App.directionsDisplay2.setDirections(result);
-     //         App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //       }
-     //     });
-     //     App.directionsService.route(endLeg, function(result, status) {
-     //       if (status == google.maps.DirectionsStatus.OK) {
-     //         App.directionsDisplay3.setDirections(result);
-     //         App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-     //       }
-     //     });
-       // }
+       App.directionsService.route(startLeg, function(result, status){
+         if (status === 'OK') {
+           App.directionsDisplay1.setDirections(result);
+           App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+         }
+       });
+       if (this.connectstation != '') {
+         App.directionsService.route(connLeg, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+             App.directionsDisplay2.setDirections(result);
+             App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+           }
+         });
+         App.directionsService.route(connLeg2, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+             App.directionsDisplay3.setDirections(result);
+             App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+           }
+         });
+         App.directionsService.route(endLeg, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+             App.directionsDisplay4.setDirections(result);
+             App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+           }
+         });
+       } else {
+         App.directionsService.route(midLeg, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+             App.directionsDisplay2.setDirections(result);
+             App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+           }
+         });
+         App.directionsService.route(endLeg, function(result, status) {
+           if (status == google.maps.DirectionsStatus.OK) {
+             App.directionsDisplay3.setDirections(result);
+             App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+           }
+         });
+       }
       
 
       
