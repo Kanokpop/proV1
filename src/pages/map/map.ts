@@ -97,14 +97,16 @@ export class MapPage {
        thresholdFromTop: 100,
        bounceBack: true
    };
-         this.geocoder = new google.maps.Geocoder;
+    
+         this.service = new google.maps.DistanceMatrixService();
+         this.geocoder = new google.maps.Geocoder();
+         console.log(this.geocoder.geocode())
          let elem = document.createElement("div")
          this.GooglePlaces = new google.maps.places.PlacesService(elem);
          this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
          this.autocomplete = {
            input: ''
          }
-        
          this.autocompleteItems = [];
          this.markers = [];
          this.loading = this.loadingCtrl.create();
@@ -120,8 +122,26 @@ export class MapPage {
            }, 4000);
         
        }
+       getPosition():any{
+         this.geolocation.getCurrentPosition().then(response => {
+           this.loadMap(response);
+         }).then(response =>{
+          // console.log(response)
+          this.calcDis();
+        })
+         .catch(error =>{
+           console.log(error);
+         })
+       }
        ionViewDidLoad(){
-        //  console.log('ll')
+         console.log('ll')
+         this.getDataFromFirebase().then(data =>{
+          this.Pop = data as any;
+         }).then(()=>{
+           this.getPosition()
+         }).catch((err)=>{
+           console.log(err)
+         });
         //  this.storage.get('intro-done').then(done => {
         //    if (done) {
         //      this.storage.set('intro-done', false);
@@ -135,10 +155,11 @@ export class MapPage {
          //     Petch :this.Pop
          //   });
          // });
-         this.getPosition();
+        //  this.getPosition();
        }
        ionViewDidEnter(){
-        //  console.log('lll')
+         console.log('lll')
+        //  console.log(this.Pop)
         //  this.storage.set('intro-done', true);
        }
       
@@ -151,14 +172,108 @@ export class MapPage {
          // console.log(dis);
          return dis;
        }
-       
-       calcDistance(origin1,destinationB,ref_Callback_calcDistance){
-        var geocoder = new google.maps.Geocoder();
-        var service = new google.maps.DistanceMatrixService();
+       calcDis(){
+         let pppp
+          this.Pop.forEach(element => {
+            pppp = element
+            // console.log(element)
+          });
+           console.log(pppp['10001'])
+           
+           let promise = new Promise(function(resolve, reject) {
+            setTimeout(() => resolve(pppp), 1000);
+          });
+          
+          // resolve runs the first function in .then
+          promise.then(
+            result =>{
+              console.log(pppp)
+              this.calcDistance(this.start,{lat: pppp['10001'].lat,lng : pppp['10001'].lng})
+            }  // shows "done!" after 1 second
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(          
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(
+
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(
+          
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(          
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          ).catch(
+            err => console.log(err)
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          ).catch(
+            err => console.log('er')
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          ).catch(
+            err => console.log('err')
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          ).catch(
+            err => console.log('err')
+          )
+          promise.then(
+            result =>{
+              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
+            }
+          ).catch(
+            err => console.log('err')
+          )
+          ;
+
+        // this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng : this.Pop[0]['0001'].lng})        
+      }
+       calcDistance(origin1,destinationB) {
+        // var geocoder = new google.maps.Geocoder();
+        // console.log(geocoder.geocode({'address': 123}))
+
+        // var service = new google.maps.DistanceMatrixService();
         var temp_duration = 0;
         var temp_distance = 0;
         var testres;
-        service.getDistanceMatrix(
+        
+        // console.log(this.geocoder)
+        // console.log(this.service)
+        this.service.getDistanceMatrix(
             {
                 origins: [origin1],
                 destinations: [destinationB],
@@ -167,9 +282,11 @@ export class MapPage {
                 avoidHighways: false,
                 avoidTolls: false
             }, function(response, status) {
+              
                 if (status !== google.maps.DistanceMatrixStatus.OK) {
-                    alert('Error was: ' + status);
-                    testres= {"duration":0,"distance":0};
+                  console.log(status)
+                    // alert('Error was: ' + status);
+                    // testres= {"duration":0,"distance":0};
                 } else {
                     var originList = response.originAddresses;
                     var destinationList = response.destinationAddresses;
@@ -177,28 +294,32 @@ export class MapPage {
                     //     testres= function (results, status) {
                     //     };
                     // };
-                    var duration_total;
+                    // var duration_total;
+                    console.log(status)
+                    if (status == 'OK') {
+                      
                     for (var i = 0; i < originList.length; i++) {
                         var results = response.rows[i].elements;
-                        this.stst =results[0].distance.value;
-                        geocoder.geocode({'address': originList[i]},
+                        // console.log( results[0].distance.value)
+                        // this.geocoder.geocode({'address': originList[i]}); 
                             // showGeocodedAddressOnMap(false)
-                            );
-                        for (var j = 0; j < results.length; j++) {
-                            geocoder.geocode({'address': destinationList[j]},
-                                // showGeocodedAddressOnMap(true)
-                                );
-                            temp_duration+=results[j].duration.value;
-                            temp_distance+=results[j].distance.value;
-                        }
+                            
+                        // for (var j = 0; j < results.length; j++) {
+                        //     geocoder.geocode({'address': destinationList[j]},
+                        //         // showGeocodedAddressOnMap(true)
+                        //         );
+                            // temp_duration+=results[j].duration.value;
+                            // temp_distance+=results[j].distance.value;
+                        // }
                     }
-                    testres= {"duration":temp_duration,"distance":temp_distance};
-                    // console.log(testres.distance)
+                  }
+                    testres= {"distance": results[0].distance.value};
+                    console.log(testres.distance)
                     // return testres.distance;
-                    if(typeof ref_Callback_calcDistance === 'function'){
-                        //calling the callback function
-                        ref_Callback_calcDistance(testres)
-                    }
+                    // if(typeof ref_Callback_calcDistance === 'function'){
+                    //     //calling the callback function
+                    //     ref_Callback_calcDistance(testres)
+                    // }
                 }
             }
         );
@@ -218,10 +339,9 @@ Callback_calcDistance(testres) {
          .subscribe(
            data => {
              this.Pop = data;
-             console.log(this.Pop)
              resolve(this.Pop) 
-           },
-           );
+            },
+            );
            // this.db.list('/Station/0').valueChanges()
            // .subscribe(
            //   data => {
@@ -244,14 +364,7 @@ Callback_calcDistance(testres) {
        }
       
       
-       getPosition():any{
-         this.geolocation.getCurrentPosition().then(response => {
-           this.loadMap(response);
-         })
-         .catch(error =>{
-           console.log(error);
-         })
-       }
+       
       
        loadMap(position: Geoposition){
          let latitude = position.coords.latitude;
@@ -270,10 +383,7 @@ Callback_calcDistance(testres) {
          });
          google.maps.event.addListenerOnce(this.map, 'idle', () => {
           
-           this.getDataFromFirebase().then(data =>{
-            
-             this.Pop = data as any;
-
+          
              let marker1  = new google.maps.Marker({
                    position: myLatLng,
                      map: this.map,
@@ -283,31 +393,32 @@ Callback_calcDistance(testres) {
              // test compare Locate
              let compare = [];
              let compare1 = [];
-             console.log(this.start)
-             console.log({lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng})
+            //  console.log(this.start)
+            //  console.log({lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng})
+            //  this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng},this.Callback_calcDistance);
              
               
-              for (let index = 0; index < this.Pop.length; index++) {  
+              // for (let index = 0; index < this.Pop.length; index++) {  
                 
-                for (let index1 in this.Pop[index]) {
-                  this.calcDistance(this.start,{lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng},this.Callback_calcDistance);
-                  console.log(this.stst)
-                //  compare[index1] = this.calculateDistance(this.start.lat,this.Pop[index][index1].lat,this.start.lng,this.Pop[index][index1].lng)
-                // console.log(this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng}))
-                compare[index1] =  this.stst;
-                // this.calcDistance(this.start,{lat: 13.746446, lng: 100.52936});
+              //   for (let index1 in this.Pop[index]) {
+              //     // this.calcDistance(this.start,{lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng},this.Callback_calcDistance);
+              //     // console.log(this.stst)
+              //   //  compare[index1] = this.calculateDistance(this.start.lat,this.Pop[index][index1].lat,this.start.lng,this.Pop[index][index1].lng)
+              //   // console.log(this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng}))
+              //   // compare[index1] =  this.stst;
+              //   // this.calcDistance(this.start,{lat: 13.746446, lng: 100.52936});
 
-                 // for (let index1 = 1; index1 < 7; index1++) {
-                   //   compare1[index] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index1].lat,this.start.lng,this.Pop[index].gate['gate'+index1].lng)
-                   //   console.log(compare1[index]);                   
-                   // }
-                  }
-                  // console.log(this.start);
-                  // console.log(compare);
+              //    // for (let index1 = 1; index1 < 7; index1++) {
+              //      //   compare1[index] = this.calculateDistance(this.start.lat,this.Pop[index].gate['gate'+index1].lat,this.start.lng,this.Pop[index].gate['gate'+index1].lng)
+              //      //   console.log(compare1[index]);                   
+              //      // }
+              //     }
+              //     // console.log(this.start);
+              //     // console.log(compare);
                   
-                }
-                if(compare[0] !== '')
-                console.log(compare)
+              //   }
+              //   if(compare[0] !== '')
+              //   console.log(compare)
              // mark End location
             // for (let index in this.Pop) {
 
@@ -393,7 +504,7 @@ Callback_calcDistance(testres) {
                   //calling the calcDistance function and passing callback function reference
                   // this.calcDistance(this.start,this.stst,this.Callback_calcDistance);
          mapEle.classList.add('show-map');
-       });
+       return this.Pop
      })
      // });     
 }
