@@ -67,6 +67,7 @@ export class MapPage {
  Green: any;
  service = new google.maps.DistanceMatrixService;
  stst: any;
+ line0 =[];
   // endgate: { lat: any; lng: any; gate: any; };
  // stLatLng: string;
  
@@ -173,110 +174,46 @@ export class MapPage {
          return dis;
        }
        calcDis(){
-         let pppp
-          this.Pop.forEach(element => {
-            pppp = element
-            // console.log(element)
-          });
-           console.log(pppp['10001'])
+         let pppp = []
+          for (let index in this.Pop) {
+            pppp[index] = this.Pop[index]
+          }
+           console.log(pppp)
            
            let promise = new Promise(function(resolve, reject) {
             setTimeout(() => resolve(pppp), 1000);
           });
+          this.calcDistance(this.start,{lat: pppp[1]['1001'].lat,lng : pppp[1]['1001'].lng},{lat: pppp[1]['1002'].lat,lng : pppp[1]['1002'].lng},this.Callback_calcDistance)
           
+          // for (let index in pppp[0]) {
+          //   this.line0[index] = this.calcDistance(this.start,{lat: pppp[0][index].lat,lng : pppp[0][index].lng},this.Callback_calcDistance)
+          //   console.log(this.stst)
+          // }
+          // for (let index in pppp[1]) {
+          //   // this.calcDistance(this.start,{lat: pppp[1][index].lat,lng : pppp[1][index].lng})
+          // }
+          
+          
+
           // resolve runs the first function in .then
           promise.then(
             result =>{
-              console.log(pppp)
-              this.calcDistance(this.start,{lat: pppp['10001'].lat,lng : pppp['10001'].lng})
+              // console.log(pppp)
+              // this.calcDistance(this.start,{lat: pppp[10]['10001'].lat,lng : pppp[10]['10001'].lng})
             }  // shows "done!" after 1 second
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(          
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(
-
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(
-          
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(          
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          ).catch(
-            err => console.log(err)
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          ).catch(
-            err => console.log('er')
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          ).catch(
-            err => console.log('err')
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          ).catch(
-            err => console.log('err')
-          )
-          promise.then(
-            result =>{
-              this.calcDistance(this.start,{lat: pppp['10002'].lat,lng : pppp['10002'].lng})
-            }
-          ).catch(
-            err => console.log('err')
           )
           ;
 
         // this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng : this.Pop[0]['0001'].lng})        
       }
-       calcDistance(origin1,destinationB) {
-        // var geocoder = new google.maps.Geocoder();
-        // console.log(geocoder.geocode({'address': 123}))
-
-        // var service = new google.maps.DistanceMatrixService();
+      calcDistance(origin1,destinationB,destinationB2,ref_Callback_calcDistance){
         var temp_duration = 0;
         var temp_distance = 0;
         var testres;
-        
-        // console.log(this.geocoder)
-        // console.log(this.service)
         this.service.getDistanceMatrix(
             {
                 origins: [origin1],
-                destinations: [destinationB],
+                destinations: [destinationB,destinationB2],
                 travelMode: google.maps.TravelMode.DRIVING,
                 unitSystem: google.maps.UnitSystem.METRIC,
                 avoidHighways: false,
@@ -285,41 +222,26 @@ export class MapPage {
               
                 if (status !== google.maps.DistanceMatrixStatus.OK) {
                   console.log(status)
-                    // alert('Error was: ' + status);
-                    // testres= {"duration":0,"distance":0};
                 } else {
                     var originList = response.originAddresses;
+                    console.log(originList)
                     var destinationList = response.destinationAddresses;
-                    // var showGeocodedAddressOnMap = function (asDestination) {
-                    //     testres= function (results, status) {
-                    //     };
-                    // };
-                    // var duration_total;
-                    console.log(status)
+                    console.log(destinationList)
+                    console.log(response)
                     if (status == 'OK') {
-                      
                     for (var i = 0; i < originList.length; i++) {
                         var results = response.rows[i].elements;
-                        // console.log( results[0].distance.value)
-                        // this.geocoder.geocode({'address': originList[i]}); 
-                            // showGeocodedAddressOnMap(false)
-                            
-                        // for (var j = 0; j < results.length; j++) {
-                        //     geocoder.geocode({'address': destinationList[j]},
-                        //         // showGeocodedAddressOnMap(true)
-                        //         );
-                            // temp_duration+=results[j].duration.value;
-                            // temp_distance+=results[j].distance.value;
-                        // }
+                        this.stst  = response.rows[i].elements;
+                        console.log(this.stst)
                     }
+                    // return this.stst
                   }
                     testres= {"distance": results[0].distance.value};
                     console.log(testres.distance)
-                    // return testres.distance;
-                    // if(typeof ref_Callback_calcDistance === 'function'){
-                    //     //calling the callback function
-                    //     ref_Callback_calcDistance(testres)
-                    // }
+                    if(typeof ref_Callback_calcDistance === 'function'){
+                      //calling the callback function
+                     this.stst = ref_Callback_calcDistance(testres)
+                    }
                 }
             }
         );
@@ -327,12 +249,10 @@ export class MapPage {
 
 Callback_calcDistance(testres) {
     //do something with testres
-    // return testres;
     console.log(testres)
 }
 
 
-    
 
        getDataFromFirebase(){return new Promise((resolve, reject) => {
          this.db.list('/Station/').valueChanges()
