@@ -72,6 +72,7 @@ export class MapPage {
   dist: any;
   candid = [];
   candidate = [];
+  stationconnect = [];
 
   // endgate: { lat: any; lng: any; gate: any; };
   // stLatLng: string;
@@ -156,36 +157,35 @@ export class MapPage {
             resolve(this.Pop)
           },
         );
-        console.log('n1')
-      });
+      console.log('n1')
+    });
   }
   getPosition(): any {
     console.log('2')
     this.geolocation.getCurrentPosition().then(response => {
       this.calDis(response);
-      
-      
-    }).then(response =>{
-      
+
+
+    }).then(response => {
+
     })
       .catch(error => {
         console.log(error);
       })
-      console.log('n2')
+    console.log('n2')
   }
- 
-  
+
 
   // Calculate Distance
-  calculateDistance(lat1: number, lat2: number, long1: number, long2: number) {
+  calculateDistance = ((lat1: number, lat2: number, long1: number, long2: number) => {
     let p = 0.017453292519943295;    // Math.PI / 180
     let c = Math.cos;
     let a = 0.5 - c((lat1 - lat2) * p) / 2 + c(lat2 * p) * c((lat1) * p) * (1 - c(((long1 - long2) * p))) / 2;
     let dis = (12742 * Math.asin(Math.sqrt(a))); // 2 * R; R = 6371 km
     // console.log(dis);
     return dis;
-  }
-  calDis(position: Geoposition) {
+  })
+  calDis = ((position: Geoposition) => {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
     // create LatLng object
@@ -207,48 +207,61 @@ export class MapPage {
         if (compare < this.candid[index1]) {
           countcompare++
         }
-        if (countcompare > 270) {
+        if (countcompare > 276) {
           if (Number(index) < 1000) {
             this.candidate[index] = this.Pop[0][index]
+            this.startstation = this.Pop[0][index]
           }
           else if (Number(index) < 2000) {
             this.candidate[index] = this.Pop[1][index]
+            this.startstation = this.Pop[1][index]
           }
           else if (Number(index) < 3000) {
             this.candidate[index] = this.Pop[2][index]
+            this.startstation = this.Pop[2][index]
           }
           else if (Number(index) < 4000) {
             this.candidate[index] = this.Pop[3][index]
+            this.startstation = this.Pop[3][index]
           }
           else if (Number(index) < 5000) {
             this.candidate[index] = this.Pop[4][index]
+            this.startstation = this.Pop[4][index]
           }
           else if (Number(index) < 6000) {
             this.candidate[index] = this.Pop[5][index]
+            this.startstation = this.Pop[5][index]
           }
           else if (Number(index) < 7000) {
             this.candidate[index] = this.Pop[6][index]
+            this.startstation = this.Pop[6][index]
           }
           else if (Number(index) < 8000) {
             this.candidate[index] = this.Pop[7][index]
+            this.startstation = this.Pop[7][index]
           }
           else if (Number(index) < 9000) {
             this.candidate[index] = this.Pop[8][index]
+            this.startstation = this.Pop[8][index]
           }
           else if (Number(index) < 10000) {
             this.candidate[index] = this.Pop[9][index]
+            this.startstation = this.Pop[9][index]
           }
           else {
             this.candidate[index] = this.Pop[10][index]
+            this.startstation = this.Pop[10][index]
           }
-
         }
       }
     }
     console.log('n4')
-    this.calcDis()
-  }
-  calcDis() {
+    // this.startstation = this.candidate;
+    // console.log(this.startstation)
+    this.loadMap()
+    // this.calcDis()
+  })
+  calcDis = () => {
     console.log('5')
     //  let promise = new Promise(function(resolve, reject) {
     //   setTimeout(() => resolve(pppp), 1000);
@@ -286,10 +299,10 @@ export class MapPage {
 
   sos(ms) {
     console.log('fuck')
-      return new Promise(r => setTimeout(r, ms));
-    }
+    return new Promise(r => setTimeout(r, ms));
+  }
 
-  async  calcDistance(origin1, updatedTeacherList, ref_Callback_calcDistance, candidate) {
+  calcDistance = ((origin1, updatedTeacherList, ref_Callback_calcDistance, candidate) => {
     console.log('6')
     var teacherZips = [];
     var temp_duration = 0;
@@ -302,7 +315,7 @@ export class MapPage {
     }
     // }
     // console.log(teacherZips);
-     this.service.getDistanceMatrix(
+    this.service.getDistanceMatrix(
       {
         origins: [origin1],
         destinations: teacherZips,
@@ -310,7 +323,7 @@ export class MapPage {
         unitSystem: google.maps.UnitSystem.METRIC,
         avoidHighways: false,
         avoidTolls: false
-      },function (response, status) {
+      }, function (response, status) {
         console.log('7')
         if (status !== google.maps.DistanceMatrixStatus.OK) {
           console.log(status)
@@ -322,7 +335,7 @@ export class MapPage {
           // console.log(response)
           if (status == 'OK') {
             for (var i = 0; i < originList.length; i++) {
-               var results = response.rows[i].elements;
+              var results = response.rows[i].elements;
             }
           }
           testres = results;
@@ -344,14 +357,14 @@ export class MapPage {
 
                 for (let ind in candidate) {
                   if (candidate[ind].lenghtcandid == index) {
-                      this.startstation = candidate[ind]
-                      console.log(this.startstation)
-                    }
+                    this.startstation = candidate[ind]
+                    console.log(this.startstation)
                   }
-                  countcompare=0
                 }
+                countcompare = 0
               }
             }
+          }
           // console.log(testres.results)
           // if (typeof ref_Callback_calcDistance === 'function') {
           //   //calling the callback function
@@ -359,31 +372,28 @@ export class MapPage {
           //   //  console.log(this.stst)
           // }
         }
-        
-        
+
+
         console.log('n7')
       },
-      setTimeout(res =>{
-        setTimeout ("console.log(this.startstation)",1000)
-        this.loadMap()
-      },2000)
+
+      // setTimeout ("console.log('ok',this.startstation)",1000)
     );
     // this.setstart(this.startstation)
     // if (this.startstation === undefined) {
     //  await setTimeout("console.log(this.startstation)",2000)
     // }
-  console.log('n6')
+    console.log('n6')
 
-  }
+  })
 
-  loadMap() {
+  loadMap = async () => {
     console.log('3')
-    console.log(this.startstation)
-    
+
     // create a new map by passing HTMLElement
     let mapEle: HTMLElement = document.getElementById('map');
 
-    
+
     // create map
     this.map = new google.maps.Map(mapEle, {
       center: this.start,
@@ -398,9 +408,13 @@ export class MapPage {
         title: 'AQUI ESTOY!'
       });
 
-      // test compare Locate
       let compare = [];
       let compare1 = [];
+
+
+      // console.log(compare)
+      // test compare Locate
+
       //  console.log(this.start)
       //  console.log({lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng})
       //  this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng: this.Pop[0]['0001'].lng},this.Callback_calcDistance);
@@ -511,13 +525,34 @@ export class MapPage {
 
       //calling the calcDistance function and passing callback function reference
       // this.calcDistance(this.start,this.stst,this.Callback_calcDistance);
+
+      var a = [];
+      // console.log(a)
+      // a[0] = 'aaa'
+      // a[0] = 'Not done'
+      // a[1] = 'bbb'
+      // a[1] = 'Not done'
+      // console.log(a)
+      // console.log(this.Pop['6']["6011"]["connect"]["line"])
+      // console.log(this.Pop['6']["6012"]["connect"])
+      console.log(this.Pop)
+      for (let index in this.Pop) {
+        for (let index1 in this.Pop[index]) {
+          if (this.Pop[index][index1].connect !== undefined) {
+            this.stationconnect[index1] = this.Pop[index][index1]
+          }
+        }
+      }
+      // console.log(this.stationconnect)q
+
       mapEle.classList.add('show-map');
       return this.Pop
     })
     // }); 
-    console.log('n3')    
+    console.log(this.startstation)
+    console.log('n3')
   }
-  
+
   Callback_calcDistance(testres) {
     //do something with testres
     console.log(testres)
@@ -541,22 +576,17 @@ export class MapPage {
       });
   }
 
-    selectSearchResult(item): any {
+  selectSearchResult(item): any {
     this.clearMarkers();
     this.autocompleteItems = [];
-    console.log(this.Pop);
-    if (this.startstation === undefined) {
-        console.log(this.startstation)
-              }
+    this.stationstart = this.startstation
     // let waypts = [{
     //   location: this.startstation,
     //   stopover: true
     // }];
-    if (this.startstation === undefined) {
-      
-    }
-     this.geocoder.geocode({ 'placeId': item.place_id }, (results, status) => {
-      console.log(results)
+
+    this.geocoder.geocode({ 'placeId': item.place_id }, (results, status) => {
+      // console.log(results)
       if (status === 'OK' && results[0]) {
         let marker = new google.maps.Marker({
           position: { lat: results[0].geometry.viewport.na.j, lng: results[0].geometry.viewport.ia.j },
@@ -595,7 +625,6 @@ export class MapPage {
               }
               var keys = Object.keys(this.Pop[index]);
               if (countconpare == ((keys.length - 1))) {
-                this.p = index2
                 this.stationend[index] = { lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng, name: this.Pop[index][index1].name, line: this.Pop[index][index1].line };
                 // this.endstation = this.stationend.name
                 //  for (let index2 = 1; index2 < 7; index2++) {
@@ -631,102 +660,201 @@ export class MapPage {
         for (let i_en in this.stationend) {
           pare_en[i_en] = this.calculateDistance(this.end.lat, this.stationend[i_en].lat, this.end.lng, this.stationend[i_en].lng)
         }
+        // console.log(pare_en)
         for (let i_en in this.stationend) {
           countpare_en = 0;
           let pare = pare_en[i_en]
           for (let i_en1 in this.stationend) {
             if (pare < pare_en[i_en1]) {
               countpare_en++;
+              // console.log(countpare_en)
             }
             if (countpare_en == (this.stationend.length - 1)) {
+              // this.p = {index:this.stationend}
+              // console.log(i_en)
               this.endstation = { lat: this.stationend[i_en].lat, lng: this.stationend[i_en].lng, name: this.stationend[i_en].name, line: this.stationend[i_en].line };
             }
           }
         }
         console.log(this.endstation)
-        //  console.log(this.Pop[this.p])
-        // console.log(this.stationstart)
-        //  console.log(this.stationend)
-        //    if (this.stationstart.line == 'green' && this.stationend.line == 'blue') {
-        //     this.connectstation = this.Pop[7]
-        //     this.connectstationhtml = this.connectstation.name
-        //     this.connectgate = 'ประตู6'
-        //      this.routing = 'LESS_WALKING'
-        //      this.nextstation = this.Pop[this.n+1].name
-        //      if (this.stationend.name == this.Pop[10].name) {
-        //        this.previousstation = this.Pop[this.p-3].name
-        //      } else{
-        //        this.previousstation = this.Pop[this.p-1].name
-        //      }
-        //    } else {
-        //       if (this.stationstart.line == 'blue' && this.stationend.line == 'green') {
+        //  console.log(this.Pop[this.p.index][this.p.index2])
+
+        console.log(this.stationstart)
+        // console.log(this.stationend)
+        let connectst = []
+        let stline: any = this.stationstart.line;
+        let dist = []
+        let nextst =[]
+        let point = 0;
+        while (stline !== this.endstation.line) {
+          connectst = []
+          console.count(this.endstation.line)
+          console.log('startNend no same line')
+          for (let index in this.stationconnect) {
+            if (this.stationconnect[index].line == stline) {
+              connectst[index] = this.stationconnect[index]
+            }
+          }
+          console.log('connectstation', connectst)
+          for (let index in connectst) {
+            console.log('Fif')
+            console.log('index', index)
+            console.log(connectst[index]['connect'].line.length)
+            if (connectst[index]['connect'].line.length > 1) {
+              for (let ind in connectst[index]['connect'].line) {
+                if (connectst[index]['connect'].line[ind] == this.endstation.line) {
+                  if (nextst[point] !== undefined || '') {
+                    let pareinconn
+                    pareinconn = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                    console.log(pareinconn)
+                    if (pareinconn < this.calculateDistance(nextst[point].lat, this.endstation.lat, nextst[point].lng, this.endstation.lng)) {
+                      stline = connectst[index]['connect'].line[ind]
+                      nextst[point] = connectst[index]
+                      console.log(nextst[point])
+                      console.log(stline)
+                    }
+                  } else {
+                    stline = connectst[index]['connect'].line[ind]
+                    nextst[point] = connectst[index]
+                    console.log(nextst[point])
+                    console.log(stline)
+                  }
+                }
+                else {
+                  console.log(connectst[index]['connect']['connectTo']['0'])
+                  dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  console.log(dist)
+                }
+                console.error('nextstationconnect', this.stationconnect[connectst[index]["connect"]['connectTo'][ind]]['line'])
+              }
+              // console.log(stline)
+            } else {
+              console.log('Felse')
+              if (connectst[index]['connect'].line == this.endstation.line) {
+                console.log('Sif')
+                stline = connectst[index]['connect'].line
+                nextst[point] = connectst[index]
+                console.log(nextst[point])
+                console.log(stline)
+              } else {
+                console.log('Selse')
+                dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                console.log(dist)
+              }
+            }
+          }
+          let sizedist = 0
+          for (let i in dist) {
+            sizedist++
+          }
+          // console.log(sizedist)
+          console.log('Ofor')
+          let countcompare = 0;
+          if (nextst[point] == undefined || '') {
+            console.log('in if')
+            for (let index in dist) {
+              let countcompare = 0;
+              let compare = dist[index]
+              for (let index1 in dist) {
+                if (compare < dist[index1]) {
+                  countcompare++
+                  console.log(countcompare)
+                }
+                if (countcompare == sizedist - 1) {
+                  nextst[point] = connectst[index]
+                  stline = connectst[index]['connect'].line
+                  console.log(nextst[point])
+                  console.log(stline)
+                }
+              }
+            }
+          } else
+            console.log('m,m,m,m,')
+          point++
+        }
+        console.log(dist)
+        console.error(nextst)
+        console.error(stline)
+
+        // if (this.stationstart.line == 'light red' && this.stationend.line == 'green') {
+        //   this.connectstation = this.Pop[7]
+        //   this.connectstationhtml = this.connectstation.name
+        //   this.connectgate = 'ประตู6'
+        //   this.routing = 'LESS_WALKING'
+        //   this.nextstation = this.Pop[this.n + 1].name
+        //   if (this.stationend.name == this.Pop[10].name) {
+        //     this.previousstation = this.Pop[this.p - 3].name
+        //   } else {
+        //     this.previousstation = this.Pop[this.p - 1].name
+        //   }
+        // } else {
+        //   if (this.stationstart.line == 'blue' && this.stationend.line == 'green') {
         //     this.connectstation = this.Pop[8]
         //     this.connectstationhtml = this.connectstation.name
         //     this.connectgate = 'ประตู3'
-        //      this.routing = 'FEWER_TRANSFERS'
-        //      if (this.stationstart.name == this.Pop[10].name) {
-        //        this.nextstation = this.Pop[this.n-3].name
-        //      } else {
-        //       this.nextstation = this.Pop[this.n+1].name            
-        //      }
-        //      if (this.stationend.name == this.Pop[7].name) {
-        //       this.previousstation = this.Pop[this.p+3].name
-        //     } else{
-        //       this.previousstation = this.Pop[this.p+1].name
+        //     this.routing = 'FEWER_TRANSFERS'
+        //     if (this.stationstart.name == this.Pop[10].name) {
+        //       this.nextstation = this.Pop[this.n - 3].name
+        //     } else {
+        //       this.nextstation = this.Pop[this.n + 1].name
         //     }
-        //    }
-        //    else if (this.stationstart.line == 'green' && this.stationend.line == 'skyblue'){
+        //     if (this.stationend.name == this.Pop[7].name) {
+        //       this.previousstation = this.Pop[this.p + 3].name
+        //     } else {
+        //       this.previousstation = this.Pop[this.p + 1].name
+        //     }
+        //   }
+        //   else if (this.stationstart.line == 'green' && this.stationend.line == 'skyblue') {
         //     this.connectstation = this.Pop[1]
         //     this.connectstationhtml = this.connectstation.name
         //     this.connectgate = 'ประตู1'
         //     this.routing = 'LESS_WALKING'
-        //     if (this.n>1) {
-        //       this.nextstation = this.Pop[this.n-1].name
-        //     } else if (this.n>0){
-        //       this.nextstation = this.Pop[this.n+10].name
+        //     if (this.n > 1) {
+        //       this.nextstation = this.Pop[this.n - 1].name
+        //     } else if (this.n > 0) {
+        //       this.nextstation = this.Pop[this.n + 10].name
         //     } else {
-        //       this.nextstation = this.Pop[this.n+1].name           
+        //       this.nextstation = this.Pop[this.n + 1].name
         //     }
         //     if (this.stationend.name == this.Pop[11].name) {
         //       this.previousstation = ''
         //       this.nextstation = ''
-        //     } else{
-        //       this.previousstation = this.Pop[this.p-1].name
+        //     } else {
+        //       this.previousstation = this.Pop[this.p - 1].name
         //     }
-        //    }
-        //    else if (this.stationstart.line == 'skybule' && this.stationend.line == 'green'){
+        //   }
+        //   else if (this.stationstart.line == 'skybule' && this.stationend.line == 'green') {
         //     this.connectstation = this.Pop[11]
-        //     this.connectstationhtml = this.connectstation.name         
+        //     this.connectstationhtml = this.connectstation.name
         //     this.connectgate = 'ประตู1'
         //     this.routing = 'LESS_WALKING'
         //   }
-        //   else if (this.stationstart.line == 'blue' && this.stationend.line == 'skyblue'){
+        //   else if (this.stationstart.line == 'blue' && this.stationend.line == 'skyblue') {
         //     this.connectstation = this.Pop[9]
         //     this.connectstationhtml = this.connectstation.name
         //     this.connectgate = 'ประตู1'
         //     this.routing = 'LESS_WALKING'
         //   }
-        //   else if (this.stationstart.line == 'skyblue' && this.stationend.line == 'blue'){
+        //   else if (this.stationstart.line == 'skyblue' && this.stationend.line == 'blue') {
         //     this.connectstation = this.Pop[13]
         //     this.connectstationhtml = this.connectstation.name
         //     this.connectgate = 'ประตู1'
         //     this.routing = 'LESS_WALKING'
         //   }
-        //   else
-        //   {
+        //   else {
         //     this.connectgate = ''
         //   }
-        //   if (this.stationstart.line == this.stationend.line ) {
-        //     if (this.n>this.p) {
+        //   if (this.stationstart.line == this.stationend.line) {
+        //     if (this.n > this.p) {
         //       console.log(this.p)
         //       console.log(this.n)
-        //       this.nextstation = this.Pop[this.n-1].name
-        //       this.previousstation =this.Pop[this.p+1].name
+        //       this.nextstation = this.Pop[this.n - 1].name
+        //       this.previousstation = this.Pop[this.p + 1].name
         //     } else {
         //       console.log(this.p)
         //       console.log(this.n)
-        //       this.nextstation = this.Pop[this.n+1].name
-        //       this.previousstation =this.Pop[this.p-1].name
+        //       this.nextstation = this.Pop[this.n + 1].name
+        //       this.previousstation = this.Pop[this.p - 1].name
         //     }
         //   }
         // }
