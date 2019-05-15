@@ -1,4 +1,4 @@
-import { Component, NgZone, Testability } from '@angular/core';
+import { Component, NgZone, Testability, ComponentFactoryResolver } from '@angular/core';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import { LoadingController, Item, Chip, Content } from 'ionic-angular';
 //import { FirebaseServiceProvider } from '../../providers/firebase-service/firebase-service';
@@ -73,7 +73,8 @@ export class MapPage {
   candid = [];
   candidate = [];
   stationconnect = [];
-
+  flightPath: any
+  i = 0;
   // endgate: { lat: any; lng: any; gate: any; };
   // stLatLng: string;
 
@@ -119,9 +120,10 @@ export class MapPage {
     // this.startgate = [];
   }
   ionViewDidLoad() {
-    console.log('l')
+    // console.log('l')
     this.getDataFromFirebase().then(data => {
       this.Pop = data as any;
+      console.log(this.Pop)
     }).then(() => {
       this.getPosition()
     }).catch((err) => {
@@ -135,7 +137,7 @@ export class MapPage {
     //  });
   }
   ionViewWillEnter() {
-    console.log('ll')
+    // console.log('ll')
     this.tabBarElement.style.display = 'none';
     setTimeout(() => {
       this.splash = false;
@@ -143,12 +145,12 @@ export class MapPage {
     }, 4000);
   }
   ionViewDidEnter() {
-    console.log('lll')
+    // console.log('lll')
     //  console.log(this.Pop)
     //  this.storage.set('intro-done', true);
   }
   getDataFromFirebase() {
-    console.log('1')
+    // console.log('1')
     return new Promise((resolve, reject) => {
       this.db.list('/Station/').valueChanges()
         .subscribe(
@@ -157,22 +159,20 @@ export class MapPage {
             resolve(this.Pop)
           },
         );
-      console.log('n1')
+      // console.log('n1')
     });
   }
   getPosition(): any {
-    console.log('2')
+    // console.log('2')
     this.geolocation.getCurrentPosition().then(response => {
       this.calDis(response);
-
-
     }).then(response => {
 
     })
       .catch(error => {
         console.log(error);
       })
-    console.log('n2')
+    // console.log('n2')
   }
 
 
@@ -191,7 +191,7 @@ export class MapPage {
     // create LatLng object
     let myLatLng = { lat: latitude, lng: longitude };
     this.start = myLatLng;
-    console.log('4')
+    // console.log('4')
     for (let index in this.Pop) {
       for (let index1 in this.Pop[index]) {
         this.candid[index1] = this.calculateDistance(this.start.lat, this.Pop[index][index1].lat, this.start.lng, this.Pop[index][index1].lng)
@@ -207,62 +207,73 @@ export class MapPage {
         if (compare < this.candid[index1]) {
           countcompare++
         }
-        if (countcompare > 273) {
+        if (countcompare > 206) {
           if (Number(index) < 1000) {
             this.candidate[index] = this.Pop[0][index]
             this.startstation = this.Pop[0][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 2000) {
             this.candidate[index] = this.Pop[1][index]
             this.startstation = this.Pop[1][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 3000) {
             this.candidate[index] = this.Pop[2][index]
             this.startstation = this.Pop[2][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 4000) {
             this.candidate[index] = this.Pop[3][index]
             this.startstation = this.Pop[3][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 5000) {
             this.candidate[index] = this.Pop[4][index]
             this.startstation = this.Pop[4][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 6000) {
             this.candidate[index] = this.Pop[5][index]
             this.startstation = this.Pop[5][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 7000) {
             this.candidate[index] = this.Pop[6][index]
             this.startstation = this.Pop[6][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 8000) {
             this.candidate[index] = this.Pop[7][index]
             this.startstation = this.Pop[7][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 9000) {
             this.candidate[index] = this.Pop[8][index]
             this.startstation = this.Pop[8][index]
+            this.startstation.index = index
           }
           else if (Number(index) < 10000) {
             this.candidate[index] = this.Pop[9][index]
             this.startstation = this.Pop[9][index]
+            this.startstation.index = index
           }
           else {
             this.candidate[index] = this.Pop[10][index]
             this.startstation = this.Pop[10][index]
+            this.startstation.index = index
           }
         }
       }
     }
-    console.log('n4')
+    // console.log('n4')
     // this.startstation = this.candidate;
     // console.log(this.startstation)
     this.loadMap()
     // this.calcDis()
   })
   calcDis = () => {
-    console.log('5')
+    // console.log('5')
     //  let promise = new Promise(function(resolve, reject) {
     //   setTimeout(() => resolve(pppp), 1000);
     // });
@@ -276,7 +287,7 @@ export class MapPage {
 
     // for (let index in pppp[0]) {
     //   this.line0[index] = this.calcDistance(this.start,{lat: pppp[0][index].lat,lng : pppp[0][index].lng},this.Callback_calcDistance)
-    //   console.log(this.stst)
+    // //console.log(this.stst)
     // }
     // for (let index in pppp[1]) {
     //   // this.calcDistance(this.start,{lat: pppp[1][index].lat,lng : pppp[1][index].lng})
@@ -293,17 +304,17 @@ export class MapPage {
     // ;
 
     // this.calcDistance(this.start,{lat: this.Pop[0]['0001'].lat,lng : this.Pop[0]['0001'].lng})
-    console.log('n5')
+    //console.log('n5')
 
   }
 
   sos(ms) {
-    console.log('fuck')
+    //console.log('fuck')
     return new Promise(r => setTimeout(r, ms));
   }
 
   calcDistance = ((origin1, updatedTeacherList, ref_Callback_calcDistance, candidate) => {
-    console.log('6')
+    //console.log('6')
     var teacherZips = [];
     var temp_duration = 0;
     var temp_distance = 0;
@@ -324,9 +335,9 @@ export class MapPage {
         avoidHighways: false,
         avoidTolls: false
       }, function (response, status) {
-        console.log('7')
+        //console.log('7')
         if (status !== google.maps.DistanceMatrixStatus.OK) {
-          console.log(status)
+          //console.log(status)
         } else {
           var originList = response.originAddresses;
           // console.log(originList)
@@ -358,7 +369,7 @@ export class MapPage {
                 for (let ind in candidate) {
                   if (candidate[ind].lenghtcandid == index) {
                     this.startstation = candidate[ind]
-                    console.log(this.startstation)
+                    //console.log(this.startstation)
                   }
                 }
                 countcompare = 0
@@ -374,7 +385,7 @@ export class MapPage {
         }
 
 
-        console.log('n7')
+        //console.log('n7')
       },
 
       // setTimeout ("console.log('ok',this.startstation)",1000)
@@ -383,12 +394,12 @@ export class MapPage {
     // if (this.startstation === undefined) {
     //  await setTimeout("console.log(this.startstation)",2000)
     // }
-    console.log('n6')
+    //console.log('n6')
 
   })
 
   loadMap = async () => {
-    console.log('3')
+    //console.log('3')
 
     // create a new map by passing HTMLElement
     let mapEle: HTMLElement = document.getElementById('map');
@@ -535,7 +546,7 @@ export class MapPage {
       // console.log(a)
       // console.log(this.Pop['6']["6011"]["connect"]["line"])
       // console.log(this.Pop['6']["6012"]["connect"])
-      console.log(this.Pop)
+      //console.log(this.Pop)
       for (let index in this.Pop) {
         for (let index1 in this.Pop[index]) {
           if (this.Pop[index][index1].connect !== undefined) {
@@ -549,13 +560,13 @@ export class MapPage {
       return this.Pop
     })
     // }); 
-    console.log(this.startstation)
-    console.log('n3')
+    //console.log(this.startstation)
+    //console.log('n3')
   }
 
   Callback_calcDistance(testres) {
     //do something with testres
-    console.log(testres)
+    //console.log(testres)
   }
 
   updateSearchResults() {
@@ -576,10 +587,18 @@ export class MapPage {
       });
   }
 
+
+
   selectSearchResult(item): any {
     this.clearMarkers();
+    if (this.i !== 0) {
+      this.flightPath.setMap(null);
+    }
+    this.i++
     this.autocompleteItems = [];
     this.stationstart = this.startstation
+    // console.log(this.startstation)
+    // console.log(this.stationstart)
     // let waypts = [{
     //   location: this.startstation,
     //   stopover: true
@@ -600,7 +619,7 @@ export class MapPage {
         this.markers.push(marker);
         this.map.setCenter(results[0].geometry.location);
         this.end = { lat: results[0].geometry.viewport.na.j, lng: results[0].geometry.viewport.ia.j };
-        console.log(this.end)
+        //console.log(this.end)
         // setstationend
         let compare = [];
         let compare1 = [];
@@ -613,7 +632,7 @@ export class MapPage {
             // }
           }
         }
-        console.log(compare)
+        //console.log(compare)
         for (let index in this.Pop) {
 
           for (let index1 in this.Pop[index]) {
@@ -625,7 +644,7 @@ export class MapPage {
               }
               var keys = Object.keys(this.Pop[index]);
               if (countconpare == ((keys.length - 1))) {
-                this.stationend[index] = { lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng, name: this.Pop[index][index1].name, line: this.Pop[index][index1].line };
+                this.stationend[index] = { lat: this.Pop[index][index1].lat, lng: this.Pop[index][index1].lng, name: this.Pop[index][index1].name, line: this.Pop[index][index1].line, index: index1 };
                 // this.endstation = this.stationend.name
                 //  for (let index2 = 1; index2 < 7; index2++) {
                 //    compare1[index2] = this.calculateDistance(this.end.lat,this.Pop[index].gate['gate'+index2].lat,this.end.lng,this.Pop[index].gate['gate'+index2].lng)
@@ -654,13 +673,13 @@ export class MapPage {
           }
         }
         // console.log(compare)
-        console.log(this.stationend)
+        //console.log(this.stationend)
         let pare_en = []
         let countpare_en = 0;
         for (let i_en in this.stationend) {
           pare_en[i_en] = this.calculateDistance(this.end.lat, this.stationend[i_en].lat, this.end.lng, this.stationend[i_en].lng)
         }
-        console.log(pare_en)
+        //console.log(pare_en)
         for (let i_en in this.stationend) {
           countpare_en = 0;
           let pare = pare_en[i_en]
@@ -672,41 +691,45 @@ export class MapPage {
             }
             if (countpare_en == (this.stationend.length)) {
               // this.p = {index:this.stationend}
-              // console.log(i_en)
-              this.endstation = { lat: this.stationend[i_en].lat, lng: this.stationend[i_en].lng, name: this.stationend[i_en].name, line: this.stationend[i_en].line };
+              this.endstation = { lat: this.stationend[i_en].lat, lng: this.stationend[i_en].lng, name: this.stationend[i_en].name, line: this.stationend[i_en].line, index: this.stationend[i_en].index };
             }
           }
         }
-        console.log(this.endstation)
         //  console.log(this.Pop[this.p.index][this.p.index2])
-
+        // console.log(this.stationconnect)
         console.log(this.stationstart)
+        console.log(this.endstation)
         // console.log(this.stationend)
         let connectst = []
         let stline: any
         let dist = []
         let nextst = []
         let point = 0;
+        let indexnextst = [];
         stline = this.stationstart.line
+        // console.log(stline)
         if (!((stline !== this.endstation.line) && (stline[0] !== this.endstation.line))) {
           nextst = this.stationstart
           nextst[0] = this.stationstart
-          console.error(nextst)
-          console.error(nextst[0])
+          // console.error(nextst)
+          // console.error(nextst[0])
         }
         while ((stline !== this.endstation.line) && (stline[0] !== this.endstation.line)) {
+          dist = []
           // console.log((stline || stline[0] !== this.endstation.line))
           // console.log((stline == this.endstation.line) && (stline[0] == this.endstation.line))
           if (point == 5) {
             return 0
           }
           connectst = []
-          console.log(stline, stline[0], this.endstation.line)
-          console.log('startNend no same line')
+          // console.log(stline.length)
+          // console.log(stline[0])
+          // console.log(this.endstation.line)
+          //console.log('startNend no same line')
           for (let index in this.stationconnect) {
             if (stline[1].length > 1) {
-              if ((this.stationconnect[index].line == stline[0]) || (this.stationconnect[index].line ==stline[1])) {
-                console.log((this.stationconnect[index].line == stline[0]) || (this.stationconnect[index].line ==stline[1]))
+              if ((this.stationconnect[index].line == stline[0]) || (this.stationconnect[index].line == stline[1])) {
+                //console.log((this.stationconnect[index].line == stline[0]) || (this.stationconnect[index].line ==stline[1]))
                 connectst[index] = this.stationconnect[index]
               }
             }
@@ -714,65 +737,99 @@ export class MapPage {
               connectst[index] = this.stationconnect[index]
             }
           }
-          console.log('connectstation', connectst)
+          // console.log('connectstation', connectst)
           for (let index in connectst) {
-            console.log('Fif')
-            console.log('index', index)
-            console.log(connectst[index]['connect'].line.length)
+            //console.log('Fif')
+            //console.log('index', index)
+            //console.log(connectst[index]['connect'].line.length)
             if (connectst[index]['connect'].line.length > 1) {
               for (let ind in connectst[index]['connect'].line) {
                 if (connectst[index]['connect'].line[ind] == this.endstation.line) {
                   if (nextst[point] !== undefined || '') {
                     let pareinconn
                     pareinconn = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
-                    console.log(pareinconn)
+                    //console.log(pareinconn)
                     if (pareinconn < this.calculateDistance(nextst[point].lat, this.endstation.lat, nextst[point].lng, this.endstation.lng)) {
                       stline = connectst[index]['connect'].line[ind]
                       nextst[point] = connectst[index]
+                      indexnextst[point] = index
                       console.log(nextst[point])
-                      console.log(stline)
+                      //console.log(stline)
+                      // console.log([index])
                     }
                   } else {
                     stline = connectst[index]['connect'].line[ind]
                     nextst[point] = connectst[index]
-                    console.log(nextst[point])
-                    console.log(stline)
+                    indexnextst[point] = index
+                    // console.log([index])
+                    // console.log(nextst[point])
+                    //console.log(stline)
                   }
                 }
                 else {
-                  console.log(connectst[index]['connect']['connectTo'][ind])
-                  dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  //console.log(connectst[index]['connect']['connectTo'][ind])
+                  // console.log(index)
+                  // console.log(nextst[point - 1]['connect']['connectTo'][0])
+                  if (nextst[point - 1]['connect']['connectTo'][0] !== index) {
+                    dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  }
                   // console.log(dist)
                 }
-                console.error('nextstationconnect', this.stationconnect[connectst[index]["connect"]['connectTo'][ind]]['line'])
+                // console.error('nextstationconnect', this.stationconnect[connectst[index]["connect"]['connectTo'][ind]]['line'])
               }
               // console.log(stline)
             } else {
-              console.log('Felse')
+              // console.log('Felse')
               if (connectst[index]['connect'].line == this.endstation.line) {
-                console.log('Sif')
-                stline = connectst[index]['connect'].line
-                nextst[point] = connectst[index]
-                console.log(nextst[point])
-                console.log(stline)
+                if (nextst[point] !== undefined || '') {
+                  let pareinconn
+                  pareinconn = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  // console.log(pareinconn)
+                  if (pareinconn < this.calculateDistance(nextst[point].lat, this.endstation.lat, nextst[point].lng, this.endstation.lng)) {
+                    stline = connectst[index]['connect'].line[0]
+                    nextst[point] = connectst[index]
+                    indexnextst[point] = [index]
+                    console.log(nextst[point])
+                    console.log(stline)
+                    console.log(index)
+                  }
+                } else {
+                  // console.log('Sif')
+                  stline = connectst[index]['connect'].line
+                  nextst[point] = connectst[index]
+                  indexnextst[point] = index
+                  console.log(nextst[point])
+                  console.log(stline)
+                }
               } else {
-                console.log('Selse')
-                dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
-                // console.log(dist)
+                // console.log('Selse')
+                // console.log(index)
+                if (point !== 0) {
+                  // console.log(nextst)
+                  // console.log(nextst[point - 1]['connect']['connectTo'][0])
+                  if (nextst[point - 1]['connect']['connectTo'][0] !== index) {
+                    dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  }
+                  // console.log(dist)
+                } else {
+                  dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                }
               }
             }
+
           }
           let sizedist = 0
           for (let i in dist) {
             sizedist++
           }
-          console.log(dist)
+          //console.log(dist)
           // console.log(sizedist)
-          console.log('Ofor')
+          //console.log('Ofor')
           let countcompare = 0;
           if (nextst[point] == undefined || '') {
-            console.log('in if')
+            //console.log('in if')
             for (let index in dist) {
+              // console.log([index])
               let countcompare = 0;
               let compare = dist[index]
               for (let index1 in dist) {
@@ -782,145 +839,291 @@ export class MapPage {
                 }
                 if (countcompare == sizedist - 1) {
                   nextst[point] = connectst[index]
-                  console.log(connectst[index])
+                  // console.log(nextst[point])
+                  indexnextst[point] = index
+                  // console.log([index])
                   stline = connectst[index]['connect'].line
-                  console.log(nextst[point])
-                  console.log(stline)
+                  //console.log(stline)
                 }
               }
             }
-          } else
-            console.log('m,m,m,m,')
+          }
+          if (stline.length == 1) {
+            stline = stline[0]
+          }
+          console.log(stline)
           point++
         }
         console.log(dist)
         console.error(nextst)
         console.error(stline)
+        console.log(indexnextst)
+        // console.log(indexnextst[0])
 
+        var flightPlanCoordinates = [];
+        if (indexnextst[1] !== undefined) {
+          // console.log('123')
+          // console.log(nextst[0]['connect']['connectTo'][0][1])
+          if (nextst[0]['connect']['connectTo'][0][1] == indexnextst[1][1]) {
+            // console.log('234')
+            if (indexnextst[1].length == 4) {
+              // console.log('345')
+              // console.log(nextst[0]['connect']['connectTo'][0])
+              // console.log(indexnextst[1])
+              if (parseInt(indexnextst[1]) - parseInt(nextst[0]['connect']['connectTo'][0]) > 0) {
+                // console.log('456')
+                let a = 0;
+                for (let index in this.Pop[indexnextst[1][0]]) {
+                  // console.log('555')
 
-        var goo = google.maps,
-          map = new goo.Map(document.getElementById('map'), {
-            center: this.end,
-            zoom: 10
-          }),
-          App = {
-            map: map,
-            bounds: new google.maps.LatLngBounds(),
-            directionsService: new google.maps.DirectionsService(),
-            directionsDisplay1: new google.maps.DirectionsRenderer({
-              map: map,
-              preserveViewport: true,
-              suppressMarkers: true,
-              polylineOptions: { strokeColor: 'red' },
-            }),
-            directionsDisplay2: new google.maps.DirectionsRenderer({
-              map: map,
-              preserveViewport: true,
-              suppressMarkers: true,
-              polylineOptions: { strokeColor: 'blue' },
-            }),
-            directionsDisplay3: new google.maps.DirectionsRenderer({
-              map: map,
-              preserveViewport: true,
-              suppressMarkers: true,
-              polylineOptions: { strokeColor: 'green' },
-            }),
-            directionsDisplay4: new google.maps.DirectionsRenderer({
-              map: map,
-              preserveViewport: true,
-              suppressMarkers: true,
-              polylineOptions: { strokeColor: 'red' },
-            }),
-          },
-          startLeg = {
-            origin: this.start,
-            destination: { lat: this.startstation.lat, lng: this.startstation.lng },
-            travelMode: 'DRIVING'
-          },
-          connLeg = {
-            origin: this.startstation,
-            destination: { lat: nextst[0].lat, lng: nextst[0].lng },
-            travelMode: 'TRANSIT',
-            transitOptions: {
-              modes: ['TRAIN', 'SUBWAY'],
-              routingPreference: 'LESS_WALKING',
-              // routingPreference: 'FEWER_TRANSFERS',
-            },
-          },
-          connLeg2 = {
-            origin: { lat: nextst[0].lat, lng: nextst[0].lng },
-            destination: { lat: this.endstation.lat, lng: this.endstation.lng },
-            travelMode: 'TRANSIT',
-            transitOptions: {
-              modes: ['TRAIN', 'SUBWAY'],
-              routingPreference: 'LESS_WALKING',
-              // routingPreference: 'FEWER_TRANSFERS',
-            },
-          },
-          midLeg = {
-            origin: this.startstation,
-            destination: { lat: this.endstation.lat, lng: this.endstation.lng },
-            travelMode: 'TRANSIT',
-            transitOptions: {
-              modes: ['TRAIN', 'SUBWAY'],
-              // routingPreference: 'LESS_WALKING',
-              routingPreference: this.routing,
-            },
-          },
-          endLeg = {
-            origin: { lat: this.endstation.lat, lng: this.endstation.lng },
-            destination: this.end,
-            travelMode: 'TRANSIT',
-            transitOptions: {
-              modes: ['TRAIN', 'SUBWAY'],
-              routingPreference: 'LESS_WALKING',
-              // routingPreference: 'FEWER_TRANSFERS',
-            },
-          };
+                  // console.log(indexnextst[1])
+                  // console.log(nextst[0]['connect']['connectTo'][0])
+                  if (index == nextst[0]['connect']['connectTo'][0]) {
+                    a = 1;
+                  }
+                  // console.log(index)
+                  // console.log(indexnextst[0])
+                  if (a == 1) {
+                    flightPlanCoordinates.push({ lat: this.Pop[indexnextst[1][0]][index].lat, lng: this.Pop[indexnextst[1][0]][index].lng })
+                    console.log(this.Pop[indexnextst[1][0]][index])
+                  }
+                  if (index == indexnextst[1]) {
+                    a = 0;
+                  }
+                }
+              }
+            }
+            // flightPlanCoordinates.push({ lat: nextst[0].lat, lng: nextst[0].lng })
+            console.log(flightPlanCoordinates)
+          } else if (this.stationstart.index[1] == indexnextst[0][1]) {
 
-        App.directionsService.route(startLeg, function (result, status) {
-          if (status === 'OK') {
-            App.directionsDisplay1.setDirections(result);
-            App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
           }
-        });
-        if (nextst != []) {
-          App.directionsService.route(connLeg, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              App.directionsDisplay2.setDirections(result);
-              App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+          if (this.endstation.index[0] == nextst[1]['connect']['connectTo'][0][0]) {
+            if (parseInt(nextst[1]['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
+              let a = 0;
+              for (let index in this.Pop[nextst[1]['connect']['connectTo'][0][0]]) {
+                if (index == nextst[1]['connect']['connectTo'][0]) {
+                  a = 1;
+                }
+                console.log(index)
+                // console.log(indexnextst[0])
+                if (a == 1) {
+                  flightPlanCoordinates.push({ lat: this.Pop[nextst[1]['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst[1]['connect']['connectTo'][0][0]][index].lng })
+                  console.log(this.Pop[nextst[1]['connect']['connectTo'][0][0]][index])
+                }
+                if (index == this.endstation.index) {
+                  a = 0;
+                }
+              }
+            }else{
+              let a = 0;
+              for (let index in this.Pop[nextst[1]['connect']['connectTo'][0][0]]) {
+                console.log(index)
+                console.log(a)
+                if (a == 1) {
+                  flightPlanCoordinates.push({ lat: this.Pop[nextst[1]['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst[1]['connect']['connectTo'][0][0]][index].lng })
+                  console.log(this.Pop[nextst[1]['connect']['connectTo'][0][0]][index])
+                }
+                if (index == nextst[1]['connect']['connectTo'][0]) {
+                  a = 1;
+                }
+                if (index == this.endstation.index) {
+                  a = 0;
+                }
+              }
             }
-          });
-          App.directionsService.route(connLeg2, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              App.directionsDisplay3.setDirections(result);
-              App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-            }
-          });
-          App.directionsService.route(endLeg, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              App.directionsDisplay4.setDirections(result);
-              App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-            }
-          });
-        } else {
-          App.directionsService.route(midLeg, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              App.directionsDisplay2.setDirections(result);
-              App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-            }
-          });
-          App.directionsService.route(endLeg, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-              App.directionsDisplay3.setDirections(result);
-              App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
-            }
-          });
+          } else if (this.endstation.index[0] == nextst[1]['connect']['connectTo'][1][0]) {
+            console.log(nextst[1]['connect']['connectTo'][1])
+          }
         }
+        if (indexnextst[0] === undefined) {
+          if (this.stationstart.index[1] == this.endstation.index[1]) {
+            if (parseInt(this.stationstart.index) - parseInt(this.endstation.index) > 0) {
+              let a = 0;
+              for (let index in this.Pop[this.stationstart.index[0]]) {
+                if (index === this.endstation.index) {
+                  a = 1
+                }
+                if (a === 1) {
+                  console.log(this.Pop[this.stationstart.index[0]][index])
+                  flightPlanCoordinates.unshift({ lat: this.Pop[this.stationstart.index[0]][index].lat, lng: this.Pop[this.stationstart.index[0]][index].lng })
+                }
+                if (index === this.stationstart.index) {
+                  a = 0
+                }
+              }
+            } else {
+
+            }
+          }
+        } else if (indexnextst[0].length == 4) {
+          console.log('ko')
+          if (this.stationstart.index[1] == indexnextst[0][1]) {
+            console.log(indexnextst[0][1])
+            if (parseInt(this.stationstart.index) - parseInt(indexnextst[0]) > 0) {
+              console.log('jo')
+              let a = 0;
+              for (let index in this.Pop[indexnextst[0][0]]) {
+                if (index == indexnextst[0]) {
+                  a = 1;
+                }
+                if (index == this.stationstart.index) {
+                  a = 0;
+                }
+                // console.log(index)
+                // console.log(indexnextst[0])
+                if (a == 1) {
+                  flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+                  // console.log(this.Pop[indexnextst[0][0]][index])
+                }
+              }
+            }
+          }
+        } else if (indexnextst[0].length == 5) {
+          for (let index in this.Pop[indexnextst[0][1] + indexnextst[0][2]]) {
+            flightPlanCoordinates.push()
+          }
+        }
+        console.log(indexnextst[0])
+
+        flightPlanCoordinates.unshift({ lat: this.start.lat, lng: this.start.lng })
+        flightPlanCoordinates.push({ lat: this.end.lat, lng: this.end.lng })
+
+        console.log(flightPlanCoordinates)
+        this.flightPath = new google.maps.Polyline({
+          path: flightPlanCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+        console.log('ooopopop')
+        this.flightPath.setMap(this.map);
+
+        // var goo = google.maps,
+        //   map = new goo.Map(document.getElementById('map'), {
+        //     center: this.end,
+        //     zoom: 10
+        //   }),
+        //   App = {
+        //     map: map,
+        //     bounds: new google.maps.LatLngBounds(),
+        //     directionsService: new google.maps.DirectionsService(),
+        //     directionsDisplay1: new google.maps.DirectionsRenderer({
+        //       map: map,
+        //       preserveViewport: true,
+        //       suppressMarkers: true,
+        //       polylineOptions: { strokeColor: 'red' },
+        //     }),
+        //     directionsDisplay2: new google.maps.DirectionsRenderer({
+        //       map: map,
+        //       preserveViewport: true,
+        //       suppressMarkers: true,
+        //       polylineOptions: { strokeColor: 'blue' },
+        //     }),
+        //     directionsDisplay3: new google.maps.DirectionsRenderer({
+        //       map: map,
+        //       preserveViewport: true,
+        //       suppressMarkers: true,
+        //       polylineOptions: { strokeColor: 'green' },
+        //     }),
+        //     directionsDisplay4: new google.maps.DirectionsRenderer({
+        //       map: map,
+        //       preserveViewport: true,
+        //       suppressMarkers: true,
+        //       polylineOptions: { strokeColor: 'red' },
+        //     }),
+        //   },
+        //   startLeg = {
+        //     origin: this.start,
+        //     destination: { lat: this.startstation.lat, lng: this.startstation.lng },
+        //     travelMode: 'DRIVING'
+        //   },
+        //   connLeg = {
+        //     origin: this.startstation,
+        //     destination: { lat: nextst[0].lat, lng: nextst[0].lng },
+        //     travelMode: 'TRANSIT',
+        //     transitOptions: {
+        //       modes: ['TRAIN', 'SUBWAY'],
+        //       routingPreference: 'LESS_WALKING',
+        //       // routingPreference: 'FEWER_TRANSFERS',
+        //     },
+        //   },
+        //   connLeg2 = {
+        //     origin: { lat: nextst[0].lat, lng: nextst[0].lng },
+        //     destination: { lat: this.endstation.lat, lng: this.endstation.lng },
+        //     travelMode: 'TRANSIT',
+        //     transitOptions: {
+        //       modes: ['TRAIN', 'SUBWAY'],
+        //       routingPreference: 'LESS_WALKING',
+        //       // routingPreference: 'FEWER_TRANSFERS',
+        //     },
+        //   },
+        //   midLeg = {
+        //     origin: this.startstation,
+        //     destination: { lat: this.endstation.lat, lng: this.endstation.lng },
+        //     travelMode: 'TRANSIT',
+        //     transitOptions: {
+        //       modes: ['TRAIN', 'SUBWAY'],
+        //       // routingPreference: 'LESS_WALKING',
+        //       routingPreference: this.routing,
+        //     },
+        //   },
+        //   endLeg = {
+        //     origin: { lat: this.endstation.lat, lng: this.endstation.lng },
+        //     destination: this.end,
+        //     travelMode: 'TRANSIT',
+        //     transitOptions: {
+        //       modes: ['TRAIN', 'SUBWAY'],
+        //       routingPreference: 'LESS_WALKING',
+        //       // routingPreference: 'FEWER_TRANSFERS',
+        //     },
+        //   };
+
+        // App.directionsService.route(startLeg, function (result, status) {
+        //   if (status === 'OK') {
+        //     App.directionsDisplay1.setDirections(result);
+        //     App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //   }
+        // });
+        // if (nextst != []) {
+        //   App.directionsService.route(connLeg, function (result, status) {
+        //     if (status == google.maps.DirectionsStatus.OK) {
+        //       App.directionsDisplay2.setDirections(result);
+        //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //     }
+        //   });
+        //   App.directionsService.route(connLeg2, function (result, status) {
+        //     if (status == google.maps.DirectionsStatus.OK) {
+        //       App.directionsDisplay3.setDirections(result);
+        //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //     }
+        //   });
+        //   App.directionsService.route(endLeg, function (result, status) {
+        //     if (status == google.maps.DirectionsStatus.OK) {
+        //       App.directionsDisplay4.setDirections(result);
+        //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //     }
+        //   });
+        // } else {
+        //   App.directionsService.route(midLeg, function (result, status) {
+        //     if (status == google.maps.DirectionsStatus.OK) {
+        //       App.directionsDisplay2.setDirections(result);
+        //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //     }
+        //   });
+        //   App.directionsService.route(endLeg, function (result, status) {
+        //     if (status == google.maps.DirectionsStatus.OK) {
+        //       App.directionsDisplay3.setDirections(result);
+        //       App.map.fitBounds(App.bounds.union(result.routes[0].bounds));
+        //     }
+        //   });
+        // }
 
 
 
-        this.directionsDisplay.setMap(this.map);
+        // this.directionsDisplay.setMap(this.map);
       }
     })
     // console.log(this.n)
