@@ -11,6 +11,7 @@ import { google } from "google-maps";
 import { Storage } from '@ionic/storage';
 import { IntroPage } from '../intro/intro';
 import { async } from 'rxjs/internal/scheduler/async';
+import { concat } from 'rxjs';
 
 
 
@@ -182,7 +183,8 @@ export class MapPage {
     let latitude = position.coords.latitude;
     let longitude = position.coords.longitude;
     let myLatLng = { lat: latitude, lng: longitude };
-    this.start = myLatLng;
+    // this.start = myLatLng;
+    this.start = { lat: 13.8211931197085, lng: 100.51081791970853 };
     for (let index in this.Pop) {
       for (let index1 in this.Pop[index]) {
         this.candid[index1] = this.calculateDistance(this.start.lat, this.Pop[index][index1].lat, this.start.lng, this.Pop[index][index1].lng)
@@ -385,8 +387,8 @@ export class MapPage {
         let indexnextst = [];
         console.log(stline)
         if (!((stline !== this.endstation.line) && (stline[0] !== this.endstation.line))) {
-          nextst = this.stationstart
-          nextst[0] = this.stationstart
+          // nextst = this.stationstart
+          // nextst[0] = this.stationstart
         }
         while ((stline !== this.endstation.line) && (stline[0] !== this.endstation.line)) {
           dist = []
@@ -415,17 +417,21 @@ export class MapPage {
                       stline = connectst[index]['connect'].line[ind]
                       nextst[point] = connectst[index]
                       indexnextst[point] = index
-                      console.log(nextst[point])
+                      console.log(index)
                     }
                   } else {
                     stline = connectst[index]['connect'].line[ind]
                     nextst[point] = connectst[index]
                     indexnextst[point] = index
+                    console.log(index)
                   }
                 }
                 else {
-                  if (nextst[point - 1]['connect']['connectTo'][0] !== index) {
-                    dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                  console.log(nextst)
+                  if (nextst[point - 1] !== undefined || '') {
+                    if (nextst[point - 1]['connect']['connectTo'][0] !== index) {
+                      dist[index] = this.calculateDistance(connectst[index].lat, this.endstation.lat, connectst[index].lng, this.endstation.lng)
+                    }
                   }
                 }
               }
@@ -437,10 +443,10 @@ export class MapPage {
                   if (pareinconn < this.calculateDistance(nextst[point].lat, this.endstation.lat, nextst[point].lng, this.endstation.lng)) {
                     stline = connectst[index]['connect'].line[0]
                     nextst[point] = connectst[index]
-                    indexnextst[point] = [index]
+                    indexnextst[point] = index
                     console.log(nextst[point])
                     console.log(stline)
-                    console.log(index)
+                    console.log(indexnextst)
                   }
                 } else {
                   stline = connectst[index]['connect'].line
@@ -477,6 +483,7 @@ export class MapPage {
                 if (countcompare == sizedist - 1) {
                   nextst[point] = connectst[index]
                   indexnextst[point] = index
+                  console.log(index)
                   stline = connectst[index]['connect'].line
                 }
               }
@@ -528,7 +535,8 @@ export class MapPage {
                 }
               }
             } else {
-              // ตัวที่สองไม่เท่ากัน
+              console.log('opp')
+              let countst = 'a'
             }
             console.log(flightPlanCoordinates)
           } else if (indexnextst[2].length == 5) {
@@ -567,9 +575,7 @@ export class MapPage {
                 }
               }
             } else {
-              if (condition) {
-
-              }
+              console.log('opp')
             }
           }
           if (this.endstation.index[0] == nextst[2]['connect']['connectTo'][0][0]) {
@@ -651,6 +657,7 @@ export class MapPage {
         if (indexnextst[1] !== undefined) {
           if (indexnextst[1].length == 4) {
             if (nextst[0]['connect']['connectTo'][0][1] == indexnextst[1][1]) {
+              console.log('opp')
               if (parseInt(indexnextst[1]) - parseInt(nextst[0]['connect']['connectTo'][0]) > 0) {
                 let a = 0;
                 for (let index in this.Pop[indexnextst[1][0]]) {
@@ -681,6 +688,7 @@ export class MapPage {
                 }
               }
             } else {
+              console.log('opp')
               // ตัวที่สองไม่เท่ากัน
             }
             console.log(flightPlanCoordinates)
@@ -720,6 +728,7 @@ export class MapPage {
                 }
               }
             } else {
+              console.log('opp')
               // Here
             }
           }
@@ -840,8 +849,130 @@ export class MapPage {
                 }
               }
             }
+          } else {
+            console.log('[')
+            let stnum = ((parseInt(this.stationstart.index[2]) * 10) + (parseInt(this.stationstart.index[3])))
+            let indnum = ((parseInt(this.endstation.index[2]) * 10) + (parseInt(this.endstation.index[3])))
+            if (stnum - indnum > 0) {
+              console.log(']')
+              let a = 0;
+              let b = 0;
+              for (let index in this.Pop[this.endstation.index[0]]) {
+                console.log(index)
+                if ((this.endstation.index[1] == index[1]) && ('1' == index[3]) && ('0' == index[2])) {
+                  console.log('[]')
+                  a = 1;
+                  b = 1;
+                }
+                if (index[1] == this.stationstart.index[1]) {
+                  console.log('][')
+                  a = 1;
+                  b = 0;
+                }
+                console.log(index[1])
+                console.log(a)
+                if (a == 1) {
+                  if (b == 0) {
+                    flightPlanCoordinates.unshift({ lat: this.Pop[this.endstation.index[0]][index].lat, lng: this.Pop[this.endstation.index[0]][index].lng })
+                    console.log(this.Pop[this.endstation.index[0]][index])
+                  } else {
+                    flightPlanCoordinates.push({ lat: this.Pop[this.endstation.index[0]][index].lat, lng: this.Pop[this.endstation.index[0]][index].lng })
+                    console.log(this.Pop[this.endstation.index[0]][index])
+                  }
+                }
+                if (index == this.stationstart.index) {
+                  console.log('{}')
+                  a = 0;
+                }
+                if (index == this.endstation.index) {
+                  console.log('}{')
+                  a = 0;
+                }
+              }
+            } else {
+              let p = this.endstation.index[0].concat(this.endstation.index[1]).concat('0').concat('1')
+              p = parseInt(p)
+              let f = []
+              let i = 0
+              for (let index in this.Pop[this.endstation.index[0]]) {
+                if (index[1] == this.endstation.index[1]) {
+                  f[i] = parseInt(index) - p
+                  i++
+                }
+              }
+
+              let c = ((parseInt(this.endstation.index[0]) * 1000) + (parseInt(this.endstation.index[1]) * 100)) + Math.max(...f);
+              console.log(c)
+              console.log((parseInt(this.endstation.index) - p))
+              console.log((parseInt(this.endstation.index) - c) + 1)
+              if ((parseInt(this.endstation.index) - p) < (parseInt(this.endstation.index) - c) + 1) {
+
+                console.log('>')
+                let a = 0;
+                let b = 0;
+                for (let index in this.Pop[this.endstation.index[0]]) {
+                  console.log(index)
+                  if ((this.endstation.index[1] == index[1]) && ('1' == index[3]) && ('0' == index[2])) {
+                    console.log('[]')
+                    a = 1;
+                    b = 1;
+                  }
+                  if (index[1] == this.stationstart.index[1]) {
+                    console.log('][')
+                    a = 1;
+                    b = 0;
+                  }
+                  console.log(index[1])
+                  console.log(a)
+                  if (a == 1) {
+                    if (b == 0) {
+                      flightPlanCoordinates.unshift({ lat: this.Pop[this.endstation.index[0]][index].lat, lng: this.Pop[this.endstation.index[0]][index].lng })
+                      console.log(this.Pop[this.endstation.index[0]][index])
+                    } else {
+                      flightPlanCoordinates.push({ lat: this.Pop[this.endstation.index[0]][index].lat, lng: this.Pop[this.endstation.index[0]][index].lng })
+                      console.log(this.Pop[this.endstation.index[0]][index])
+                    }
+                  }
+                  if (index == this.stationstart.index) {
+                    console.log('{}')
+                    a = 0;
+                  }
+                  if (index == this.endstation.index) {
+                    console.log('}{')
+                    a = 0;
+                  }
+                }
+              } else {
+                console.log('>')
+                let a = 0;
+                let b = 0;
+                for (let index in this.Pop[this.endstation.index[0]]) {
+                  if (index === "2032" && a === 1) {
+                    b = 1;
+                  }
+                  if (index === '2101' && a === 1 && b === 1) {
+                    flightPlanCoordinates.unshift({ lat: this.Pop[this.endstation.index[0]]['2001'].lat, lng: this.Pop[this.endstation.index[0]]['2001'].lng })
+                    console.log(this.Pop[this.endstation.index[0]]['2001'])
+                  }
+                  console.log(index)
+                  if (this.endstation.index == index) {
+                    a = 1;
+                  }
+                  if (a == 1) {
+                    flightPlanCoordinates.unshift({ lat: this.Pop[this.endstation.index[0]][index].lat, lng: this.Pop[this.endstation.index[0]][index].lng })
+                    console.log(this.Pop[this.endstation.index[0]][index])
+                  }
+                  if (index == this.stationstart.index) {
+                    console.log('}{')
+                    a = 0;
+                  }
+                }
+              }
+            }
           }
         } else {
+          console.log('0000')
+
           if (indexnextst[0].length == 4) {
             console.log('ko')
             if (this.stationstart.index[1] == indexnextst[0][1]) {
@@ -850,15 +981,15 @@ export class MapPage {
                 console.log('jo')
                 let a = 0;
                 for (let index in this.Pop[indexnextst[0][0]]) {
-                  if (index == this.stationstart.index) {
-                    a = 0;
-                  }
                   if (index == indexnextst[0]) {
                     a = 1;
                   }
                   if (a == 1) {
                     flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
                     console.log(this.Pop[indexnextst[0][0]][index])
+                  }
+                  if (index == this.stationstart.index) {
+                    a = 0;
                   }
                 }
               } else {
@@ -877,7 +1008,61 @@ export class MapPage {
                 }
               }
             } else {
-              // Here
+              console.log('[')
+              let stnum = ((parseInt(this.stationstart.index[2]) * 10) + (parseInt(this.stationstart.index[3])))
+              let indnum = ((parseInt(indexnextst[0][2]) * 10) + (parseInt(indexnextst[0][3])))
+              if (stnum - indnum > 0) {
+                console.log(']')
+                let a = 0;
+                for (let index in this.Pop[indexnextst[0][0]]) {
+                  if (index == this.stationstart.index) {
+                    a = 0;
+                  }
+                  if (index == indexnextst[0]) {
+                    a = 1;
+                  }
+                  if (a == 1) {
+                    flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+                    console.log(this.Pop[indexnextst[0][0]][index])
+                  }
+                }
+              } else {
+                console.log('>')
+                let a = 0;
+                let b = 0;
+                for (let index in this.Pop[indexnextst[0][0]]) {
+                  // console.log(index)
+                  if ((indexnextst[0][1] == index[1]) && ('1' == index[3]) && ('0' == index[2])) {
+                    // console.log('[]')
+                    a = 1;
+                    b = 1;
+                  }
+                  if (index[1] == this.stationstart.index[1]) {
+                    // console.log('][')
+                    a = 1;
+                    b = 0;
+                  }
+                  // console.log(index[1])
+                  // console.log(a)
+                  if (a == 1) {
+                    if (b == 0) {
+                      flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+                      console.log(this.Pop[indexnextst[0][0]][index])
+                    } else {
+                      flightPlanCoordinates.push({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+                      console.log(this.Pop[indexnextst[0][0]][index])
+                    }
+                  }
+                  if (index == this.stationstart.index) {
+                    // console.log('{}')
+                    a = 0;
+                  }
+                  if (index == indexnextst[0]) {
+                    // console.log('}{')
+                    a = 0;
+                  }
+                }
+              }
             }
           } else if (indexnextst[0].length == 5) {
             if (this.stationstart.index[2] == indexnextst[0][2]) {
@@ -912,7 +1097,62 @@ export class MapPage {
                 }
               }
             } else {
-              // Here
+              console.log('opp')
+              // console.log('[')
+              // let stnum = ((parseInt(this.stationstart.index[3]) * 10) + (parseInt(this.stationstart.index[4])))
+              // let indnum = ((parseInt(indexnextst[0][3]) * 10) + (parseInt(indexnextst[0][4])))
+              // if (stnum - indnum > 0) {
+              //   console.log(']')
+              //   let a = 0;
+              //   for (let index in this.Pop[indexnextst[0][0]]) {
+              //     if (index == this.stationstart.index) {
+              //       a = 0;
+              //     }
+              //     if (index == indexnextst[0]) {
+              //       a = 1;
+              //     }
+              //     if (a == 1) {
+              //       flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+              //       console.log(this.Pop[indexnextst[0][0]][index])
+              //     }
+              //   }
+              // } else {
+              //   console.log('>')
+              //   let a = 0;
+              //   let b = 0;
+              //   for (let index in this.Pop[indexnextst[0][0]]) {
+              //     // console.log(index)
+              //     if ((indexnextst[0][1] == index[1]) && ('1' == index[3]) && ('0' == index[2])) {
+              //       // console.log('[]')
+              //       a = 1;
+              //       b = 1;
+              //     }
+              //     if (index[1] == this.stationstart.index[1]) {
+              //       // console.log('][')
+              //       a = 1;
+              //       b = 0;
+              //     }
+              //     // console.log(index[1])
+              //     // console.log(a)
+              //     if (a == 1) {
+              //       if (b == 0) {
+              //         flightPlanCoordinates.unshift({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+              //         console.log(this.Pop[indexnextst[0][0]][index])
+              //       } else {
+              //         flightPlanCoordinates.push({ lat: this.Pop[indexnextst[0][0]][index].lat, lng: this.Pop[indexnextst[0][0]][index].lng })
+              //         console.log(this.Pop[indexnextst[0][0]][index])
+              //       }
+              //     }
+              //     if (index == this.stationstart.index) {
+              //       // console.log('{}')
+              //       a = 0;
+              //     }
+              //     if (index == indexnextst[0]) {
+              //       // console.log('}{')
+              //       a = 0;
+              //     }
+              //   }
+              // }
             }
           }
           if (nextst[1] == undefined) {
