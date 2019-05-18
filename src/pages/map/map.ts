@@ -330,12 +330,18 @@ export class MapPage {
 
 
   selectSearchResult(item): any {
+    this.nextstation = ''
+    this.nextstation1 = ''
+    this.nextstation2 = ''
+    this.nextstationline = ''
+    this.nextstation1line = ''
+    this.nextstation2line = ''
     this.clearMarkers();
     if (this.i !== 0) {
       this.flightPath.setMap(null);
     }
-    this.buffline2 =[]
-    this.buffline3 =[]
+    this.buffline2 = []
+    this.buffline3 = []
     this.i++
     this.autocompleteItems = [];
     this.stationstart = this.startstation
