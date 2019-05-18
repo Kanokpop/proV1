@@ -51,19 +51,13 @@ export class MapPage {
   stationstart = [];
   stationend = [];
   startgate: any;
-  starthtml: any;
   connectgate: any;
   endgate: any;
-  startgatehtml: any;
-  endgatehtml: any;
   routing: any;
   startstation: any;
   connectstation: any;
-  connectstationhtml: any;
   endstation: any;
-  nextstation: any;
   previousstation: any;
-  nextstationhtml: any;
   n: any;
   p: any;
   Pink: any;
@@ -79,6 +73,16 @@ export class MapPage {
   i = 0;
   buffline2 = []
   buffline3 = []
+  starthtml: any;
+  nextstation: any;
+  nextstation1: any;
+  nextstation2: any;
+  endstationhtml: any;
+  startlinehtml: any;
+  nextstationline: any;
+  nextstation1line: any;
+  nextstation2line: any;
+  endstationlinehtml: any;
   // endgate: { lat: any; lng: any; gate: any; };
   // stLatLng: string;
 
@@ -264,6 +268,7 @@ export class MapPage {
       }
     }
     this.starthtml = this.startstation['name']
+    this.startlinehtml = this.startstation['line']
     console.log(this.starthtml)
     this.loadMap()
   })
@@ -501,11 +506,33 @@ export class MapPage {
           console.log(stline)
           point++
         }
+
+        console.error(nextst)
+        console.error(nextst['0'])
+
+        if (nextst[2] !== undefined) {
+          this.nextstation = nextst['0']['name']
+          this.nextstation1 = nextst['1']['name']
+          this.nextstation2 = nextst['2']['name']
+          this.nextstationline = nextst['1']['line']
+          this.nextstation1line = nextst['2']['line']
+          this.nextstation2line = this.endstation['line']
+        } else if (nextst[1] !== undefined) {
+          this.nextstation = nextst['0']['name']
+          this.nextstation1 = nextst['1']['name']
+          this.nextstationline = nextst['1']['line']
+          this.nextstation1line = this.endstation['line']
+        } else if (nextst !== undefined && nextst['0'] !== undefined) {
+          this.nextstation = nextst['0']['name']
+          this.nextstationline = this.endstation['line']
+        }
+        if (nextst.length == 1) {
+          nextst = nextst[0]
+        }
         console.log(dist)
         console.error(nextst)
         console.error(stline)
         console.log(indexnextst)
-        this.nextstation = nextst['0']['name']
         var flightPlanCoordinates = [];
 
         if (indexnextst[2] !== undefined) {
@@ -797,7 +824,7 @@ export class MapPage {
                 }
                 for (let index in this.buffline2) {
                   flightPlanCoordinates.push(this.buffline2[index])
-                } 
+                }
                 for (let index in this.buffline3) {
                   flightPlanCoordinates.push(this.buffline3[index])
                 }
@@ -1288,25 +1315,26 @@ export class MapPage {
               // }
             }
           }
+          console.log(nextst)
           if (nextst[1] == undefined) {
             if (this.endstation.index.length === 4) {
-              if (this.endstation.index[0] == nextst[0]['connect']['connectTo'][0][0]) {
-                if (parseInt(nextst[0]['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
+              if (this.endstation.index[0] == nextst['connect']['connectTo'][0][0]) {
+                if (parseInt(nextst['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
                   let a = 0;
                   let buff = []
                   let i_buff = 0
-                  console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0]])
-                  for (let index in this.Pop[nextst[0]['connect']['connectTo'][0][0]]) {
+                  console.log(this.Pop[nextst['connect']['connectTo'][0][0]])
+                  for (let index in this.Pop[nextst['connect']['connectTo'][0][0]]) {
                     if (index == this.endstation.index) {
                       a = 1;
                     }
                     // console.log(index)  
                     if (a == 1) {
-                      buff.unshift({ lat: this.Pop[nextst[0]['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst[0]['connect']['connectTo'][0][0]][index].lng })
+                      buff.unshift({ lat: this.Pop[nextst['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst['connect']['connectTo'][0][0]][index].lng })
                       i_buff++
-                      console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0]][index])
+                      console.log(this.Pop[nextst['connect']['connectTo'][0][0]][index])
                     }
-                    if (index == nextst[0]['connect']['connectTo'][0]) {
+                    if (index == nextst['connect']['connectTo'][0]) {
                       a = 0;
                     }
                   }
@@ -1314,30 +1342,30 @@ export class MapPage {
                     flightPlanCoordinates.push(buff[index])
                   }
                 } else {
-                  console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0]])
+                  console.log(this.Pop[nextst['connect']['connectTo'][0][0]])
                   let a = 0;
                   let b = 0;
-                  for (let index in this.Pop[nextst[0]['connect']['connectTo'][0][0]]) {
+                  for (let index in this.Pop[nextst['connect']['connectTo'][0][0]]) {
                     if (index === "2032" && a === 1) {
                       b = 1;
                     }
                     if (index === '2101' && a === 1 && b === 1) {
-                      flightPlanCoordinates.push({ lat: this.Pop[nextst[0]['connect']['connectTo'][0][0]]['2001'].lat, lng: this.Pop[nextst[0]['connect']['connectTo'][0][0]]['2001'].lng })
-                      console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0]]['2001'])
+                      flightPlanCoordinates.push({ lat: this.Pop[nextst['connect']['connectTo'][0][0]]['2001'].lat, lng: this.Pop[nextst['connect']['connectTo'][0][0]]['2001'].lng })
+                      console.log(this.Pop[nextst['connect']['connectTo'][0][0]]['2001'])
+                    }
+                    if (index == nextst['connect']['connectTo'][0]) {
+                      a = 1;
                     }
                     if (a == 1) {
-                      flightPlanCoordinates.push({ lat: this.Pop[nextst[0]['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst[0]['connect']['connectTo'][0][0]][index].lng })
-                      console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0]][index])
-                    }
-                    if (index == nextst[0]['connect']['connectTo'][0]) {
-                      a = 1;
+                      flightPlanCoordinates.push({ lat: this.Pop[nextst['connect']['connectTo'][0][0]][index].lat, lng: this.Pop[nextst['connect']['connectTo'][0][0]][index].lng })
+                      console.log(this.Pop[nextst['connect']['connectTo'][0][0]][index])
                     }
                     if (index == this.endstation.index) {
                       a = 0;
                     }
                   }
                 }
-              } else if (nextst[0]['connect']['connectTo'].length === 1) {
+              } else if (nextst['connect']['connectTo'].length === 1) {
                 if (this.endstation.index[0] == nextst[1]['connect']['connectTo'][0][0]) {
                   if (parseInt(nextst[1]['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
                     let a = 0;
@@ -1409,37 +1437,37 @@ export class MapPage {
                 }
                 console.log(nextst)
 
-              } else if (nextst[0]['connect']['connectTo'].length === 2) {
-                console.log(nextst[0]['connect']['connectTo'][1])
-                if (this.endstation.index[0] == nextst[0]['connect']['connectTo'][1][0]) {
+              } else if (nextst['connect']['connectTo'].length === 2) {
+                console.log(nextst['connect']['connectTo'][1])
+                if (this.endstation.index[0] == nextst['connect']['connectTo'][1][0]) {
                 }
               }
             } else if (this.endstation.index.length === 5) {
-              if (this.endstation.index[0] + this.endstation.index[1] == nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]) {
-                if (parseInt(nextst[0]['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
+              if (this.endstation.index[0] + this.endstation.index[1] == nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]) {
+                if (parseInt(nextst['connect']['connectTo'][0]) - parseInt(this.endstation.index) > 0) {
                   let a = 0;
-                  console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]])
-                  for (let index in this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]]) {
-                    if (index == nextst[0]['connect']['connectTo'][0]) {
+                  console.log(this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]])
+                  for (let index in this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]]) {
+                    if (index == nextst['connect']['connectTo'][0]) {
                       a = 1;
                     }
                     console.log(index)
                     if (a == 1) {
-                      flightPlanCoordinates.push({ lat: this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]][index].lat, lng: this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]][index].lng })
-                      console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]][index])
+                      flightPlanCoordinates.push({ lat: this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]][index].lat, lng: this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]][index].lng })
+                      console.log(this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]][index])
                     }
                     if (index == this.endstation.index) {
                       a = 0;
                     }
                   }
                 } else {
-                  console.log(this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]])
+                  console.log(this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]])
                   let a = 0;
-                  for (let index in this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]]) {
+                  for (let index in this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]]) {
                     if (a == 1) {
-                      flightPlanCoordinates.push({ lat: this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]][index].lat, lng: this.Pop[nextst[0]['connect']['connectTo'][0][0] + nextst[0]['connect']['connectTo'][0][1]][index].lng })
+                      flightPlanCoordinates.push({ lat: this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]][index].lat, lng: this.Pop[nextst['connect']['connectTo'][0][0] + nextst['connect']['connectTo'][0][1]][index].lng })
                     }
-                    if (index == nextst[0]['connect']['connectTo'][0]) {
+                    if (index == nextst['connect']['connectTo'][0]) {
                       a = 1;
                     }
                     if (index == this.endstation.index) {
@@ -1447,13 +1475,20 @@ export class MapPage {
                     }
                   }
                 }
-              } else if (this.endstation.index[0] == nextst[0]['connect']['connectTo'][1][0]) {
-                console.log(nextst[0]['connect']['connectTo'][0])
+              } else if (this.endstation.index[0] == nextst['connect']['connectTo'][1][0]) {
+                console.log(nextst['connect']['connectTo'][0])
               }
               console.log('aa')
             }
           }
         }
+
+        // console.log(this.nextstation[0])
+
+        this.endstationhtml = this.endstation['name']
+        this.endstationlinehtml = this.endstation['line']
+
+
 
         flightPlanCoordinates.unshift({ lat: this.start.lat, lng: this.start.lng })
         flightPlanCoordinates.push({ lat: this.end.lat, lng: this.end.lng })
