@@ -184,6 +184,7 @@ export class MapPage {
     let longitude = position.coords.longitude;
     let myLatLng = { lat: latitude, lng: longitude };
     // this.start = myLatLng;
+    
     this.start = { lat: 13.8211931197085, lng: 100.51081791970853 };
     for (let index in this.Pop) {
       for (let index1 in this.Pop[index]) {
