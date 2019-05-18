@@ -334,6 +334,8 @@ export class MapPage {
     if (this.i !== 0) {
       this.flightPath.setMap(null);
     }
+    this.buffline2 =[]
+    this.buffline3 =[]
     this.i++
     this.autocompleteItems = [];
     this.stationstart = this.startstation
