@@ -51,6 +51,7 @@ export class MapPage {
   stationstart = [];
   stationend = [];
   startgate: any;
+  starthtml:any;
   connectgate: any;
   endgate: any;
   startgatehtml: any;
@@ -260,7 +261,8 @@ export class MapPage {
         }
       }
     }
-
+    this.starthtml = this.startstation
+    console.log(this.starthtml)
     this.loadMap()
   })
   loadMap = async () => {
