@@ -51,7 +51,7 @@ export class MapPage {
   stationstart = [];
   stationend = [];
   startgate: any;
-  starthtml:any;
+  starthtml: any;
   connectgate: any;
   endgate: any;
   startgatehtml: any;
@@ -823,30 +823,34 @@ export class MapPage {
 
 
         if (indexnextst[0] === undefined) {
-          if (this.stationstart['index'[1]] == this.endstation.index[1]) {
+          console.log('hi')
+          if (this.stationstart['index']['1'] == this.endstation.index[1]) {
+            console.log('hi')
             if (parseInt(this.stationstart['index']) - parseInt(this.endstation.index) > 0) {
+              console.log('hi')
               let a = 0;
-              for (let index in this.Pop[this.stationstart['index'[0]]]) {
+              for (let index in this.Pop[this.stationstart['index']['0']]) {
                 if (index === this.endstation.index) {
                   a = 1
                 }
                 if (a === 1) {
-                  console.log(this.Pop[this.stationstart['index'[0]]][index])
-                  flightPlanCoordinates.unshift({ lat: this.Pop[this.stationstart['index'[0]]][index].lat, lng: this.Pop[this.stationstart['index'[0]]][index].lng })
+                  console.log(this.Pop[this.stationstart['index']['0']][index])
+                  flightPlanCoordinates.unshift({ lat: this.Pop[this.stationstart['index']['0']][index].lat, lng: this.Pop[this.stationstart['index']['0']][index].lng })
                 }
                 if (index === this.stationstart['index']) {
                   a = 0
                 }
               }
             } else {
+              console.log(this.Pop[this.stationstart['index']['0']])
               let a = 0;
-              for (let index in this.Pop[this.stationstart['index'[0]]]) {
+              for (let index in this.Pop[this.stationstart['index']['0']]) {
                 if (index === this.stationstart['index']) {
-                  a = 0
+                  a = 1
                 }
                 if (a === 1) {
-                  console.log(this.Pop[this.stationstart['index'[0]]][index])
-                  flightPlanCoordinates.unshift({ lat: this.Pop[this.stationstart['index'[0]]][index].lat, lng: this.Pop[this.stationstart['index'[0]]][index].lng })
+                  console.log(this.Pop[this.stationstart['index']['0']][index])
+                  flightPlanCoordinates.push({ lat: this.Pop[this.stationstart['index']['0']][index].lat, lng: this.Pop[this.stationstart['index']['0']][index].lng })
                 }
                 if (index === this.endstation.index) {
                   a = 0
@@ -894,6 +898,11 @@ export class MapPage {
                 }
               }
             } else {
+              console.log(this.stationstart['index']['1'])
+              console.log(this.endstation.index[1])
+              if (this.stationstart['index']['1'] == this.endstation.index[1]) {
+                console.log('hi')
+              }
               let p = this.endstation.index[0].concat(this.endstation.index[1]).concat('0').concat('1')
               p = parseInt(p)
               let f = []
